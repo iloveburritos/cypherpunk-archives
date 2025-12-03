@@ -99,6 +99,64 @@
             color: #00aa00;
         }
 
+        .person-item .name-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #333;
+            border: 1px solid #555;
+            color: #888;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-style: italic;
+            font-family: Georgia, serif;
+        }
+
+        .info-btn:hover {
+            background: #444;
+            border-color: #00aaff;
+            color: #00aaff;
+        }
+
+        .bio-tooltip {
+            display: none;
+            position: fixed;
+            background: #1a1a1a;
+            border: 1px solid #00aaff;
+            padding: 12px 15px;
+            border-radius: 4px;
+            max-width: 350px;
+            font-size: 0.8rem;
+            color: #ccc;
+            line-height: 1.5;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .bio-tooltip.visible {
+            display: block;
+        }
+
+        .bio-tooltip .bio-name {
+            color: #00aaff;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .bio-tooltip .bio-text {
+            color: #aaa;
+        }
+
         .clear-filter {
             padding: 10px;
             margin-bottom: 15px;
@@ -528,6 +586,11 @@
             </ul>
         </aside>
 
+        <div class="bio-tooltip" id="bio-tooltip">
+            <div class="bio-name" id="bio-name"></div>
+            <div class="bio-text" id="bio-text"></div>
+        </div>
+
         <main class="main-content">
             <header>
                 <h1>Notable Cypherpunks Archive</h1>
@@ -616,6 +679,44 @@
         // Build reverse lookup: email -> person name
         let emailToPerson = {};
 
+        // Bios for notable cypherpunks
+        const personBios = {
+            "Timothy C. May": "Co-founder of the Cypherpunks; author of The Crypto Anarchist Manifesto, shaping the modern privacy-through-cryptography ethos.",
+            "Perry E. Metzger": "Founder of the Cypherpunks mailing list; drove practical deployment of strong cryptography and anti-surveillance activism.",
+            "Jim Bell": "Radical cypherpunk economist known for \"Assassination Politics,\" exploring cryptographically-enabled market anonymity.",
+            "Eric Hughes": "Author of A Cypherpunk's Manifesto and co-founder of the movement; champion of anonymous digital identity.",
+            "Duncan Frissell": "Libertarian writer and cypherpunk advocate focused on digital rights, privacy law, and crypto-backed civil liberties.",
+            "Black Unicorn": "Pseudonymous cryptography expert known for sharp, technical privacy analysis within the early cypherpunk community.",
+            "Lucky Green": "Operator of early remailer and anonymity infrastructure; contributor to PGP and digital privacy systems.",
+            "Adam Back": "Inventor of Hashcash (Bitcoin's PoW precursor); long-time cypherpunk driving anonymous e-cash and privacy tech.",
+            "James A. Donald": "Early Bitcoin discussant and cryptography commentator known for critiques of privacy protocols and scaling.",
+            "Hal Finney": "Legendary cryptographer; creator of PGP 2.0, reusable proofs of work, and first recipient of a Bitcoin transaction.",
+            "John Gilmore": "EFF co-founder and early cypherpunk pushing strong crypto export freedom and anonymous networks.",
+            "Carl Ellison": "Pioneer in public-key infrastructure and digital certificates; contributor to SPKI and secure identity protocols.",
+            "Phil Karn": "Engineer who helped liberalize US crypto-export laws by challenging restrictions on privacy tech.",
+            "Rishab Aiyer Ghosh": "Researcher mapping open-source ecosystems and digital freedom economics tied to privacy online.",
+            "Bryce 'Zooko' Wilcox": "Creator of Zcash; long-time privacy technologist known for naming Zooko's Triangle (identity properties).",
+            "Lance Cottrell": "Founder of Anonymizer.com; built one of the earliest commercial privacy and anonymous browsing services.",
+            "Matt Blaze": "Cryptographer who exposed Clipper Chip vulnerabilities; major critic of government backdoors in privacy tech.",
+            "Ian Goldberg": "Designer of Off-the-Record (OTR) Messaging; Tor Project contributor and world-class privacy cryptographer.",
+            "Wei Dai": "Creator of b-money (a Bitcoin precursor) and contributor to anonymity, crypto protocols, and digital freedom theory.",
+            "Johan Helsingius": "Operator of the world's most famous anonymous remailer, anon.penet.fi.",
+            "Julian Assange": "Founder of WikiLeaks; cypherpunk veteran advocating radical transparency and individual anonymity.",
+            "Eric Blossom": "Founder of GNU Radio; advocate for open, privacy-respecting communication systems.",
+            "Nick Szabo": "Creator of smart contracts and Bit Gold; thinker bridging cryptography, digital privacy, and decentralized money.",
+            "Vipul Ved Prakash": "Creator of Vipul's Razor anti-spam tool; early developer of cryptographically-driven information hygiene systems.",
+            "Bruce Schneier": "World-renowned cryptographer and author who popularized privacy security practices and government backdoor critiques.",
+            "Ryan Lackey": "Founder of HavenCo on Sealand; worked on secure hardware, private communications, and operational security systems.",
+            "Philip Zimmermann": "Creator of PGP; central figure in the crypto-export \"Crypto Wars\" defending personal privacy rights.",
+            "Marc Andreessen": "Co-author of Mosaic/Netscape; helped bring SSL and encrypted browsing to the mainstream Internet.",
+            "Ian Grigg": "Architect of Ricardian Contracts and financial cryptography systems with strong privacy foundations.",
+            "Whitfield Diffie": "Co-inventor of public-key cryptography; foundational figure enabling all modern privacy-preserving protocols.",
+            "Bram Cohen": "Creator of BitTorrent; transformed peer-to-peer sharing with decentralized, censorship-resistant distribution.",
+            "Mitch Kapor": "EFF co-founder and early Internet-rights funder supporting privacy and anti-surveillance advocacy.",
+            "John Perry Barlow": "EFF co-founder; wrote \"A Declaration of the Independence of Cyberspace,\" defending digital freedom and anonymity.",
+            "Martin Hellman": "Co-inventor of Diffie-Hellman key exchange, enabling private communication over insecure networks."
+        };
+
         // DOM Elements
         const threadListEl = document.getElementById('thread-list');
         const threadListView = document.querySelector('.thread-list-view');
@@ -683,9 +784,13 @@
 
             personListEl.innerHTML = sortedPeople.map(([name, postCount]) => {
                 const threadCount = notableStats.threads_by_person?.[name] || 0;
+                const hasBio = personBios[name] ? 'true' : 'false';
                 return `
                     <li class="person-item" data-person="${escapeHtml(name)}">
-                        <span class="name">${escapeHtml(name)}</span>
+                        <span class="name-row">
+                            <span class="name">${escapeHtml(name)}</span>
+                            ${personBios[name] ? `<button class="info-btn" data-person="${escapeHtml(name)}">i</button>` : ''}
+                        </span>
                         <span class="stats">
                             <span class="posts">${postCount.toLocaleString()} msgs</span><br>
                             <span class="threads">${threadCount.toLocaleString()} threads</span>
@@ -694,10 +799,66 @@
                 `;
             }).join('');
 
-            // Add click handlers
+            // Add click handlers for person selection
             personListEl.querySelectorAll('.person-item').forEach(el => {
-                el.addEventListener('click', () => selectPerson(el.dataset.person));
+                el.addEventListener('click', (e) => {
+                    // Don't trigger if clicking the info button
+                    if (e.target.classList.contains('info-btn')) return;
+                    selectPerson(el.dataset.person);
+                });
             });
+
+            // Add click handlers for info buttons
+            personListEl.querySelectorAll('.info-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showBioTooltip(btn.dataset.person, e);
+                });
+            });
+        }
+
+        // Bio tooltip elements
+        const bioTooltip = document.getElementById('bio-tooltip');
+        const bioNameEl = document.getElementById('bio-name');
+        const bioTextEl = document.getElementById('bio-text');
+
+        // Show bio tooltip
+        function showBioTooltip(personName, event) {
+            const bio = personBios[personName];
+            if (!bio) return;
+
+            bioNameEl.textContent = personName;
+            bioTextEl.textContent = bio;
+
+            // Position tooltip near the button
+            const rect = event.target.getBoundingClientRect();
+            const tooltipWidth = 350;
+
+            // Position to the right of the sidebar
+            let left = rect.right + 10;
+            let top = rect.top;
+
+            // Make sure it doesn't go off screen
+            if (left + tooltipWidth > window.innerWidth) {
+                left = rect.left - tooltipWidth - 10;
+            }
+            if (top + 100 > window.innerHeight) {
+                top = window.innerHeight - 120;
+            }
+
+            bioTooltip.style.left = left + 'px';
+            bioTooltip.style.top = top + 'px';
+            bioTooltip.classList.add('visible');
+
+            // Hide on click outside
+            setTimeout(() => {
+                document.addEventListener('click', hideBioTooltip, { once: true });
+            }, 0);
+        }
+
+        // Hide bio tooltip
+        function hideBioTooltip() {
+            bioTooltip.classList.remove('visible');
         }
 
         // Select a person to filter by
