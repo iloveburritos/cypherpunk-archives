@@ -219,7 +219,18 @@ def build_threads(input_path: Path, output_path: Path):
 
 
 def main():
-    input_path = Path('/Users/maariabajwa/zypherpunk_cypherpunk/threading/threading_step3.json')
+    # Use the latest step output available
+    input_path_3c = Path('/Users/maariabajwa/zypherpunk_cypherpunk/threading/threading_step3c.json')
+    input_path_3b = Path('/Users/maariabajwa/zypherpunk_cypherpunk/threading/threading_step3b.json')
+    input_path_3 = Path('/Users/maariabajwa/zypherpunk_cypherpunk/threading/threading_step3.json')
+
+    if input_path_3c.exists():
+        input_path = input_path_3c
+    elif input_path_3b.exists():
+        input_path = input_path_3b
+    else:
+        input_path = input_path_3
+
     output_path = Path('/Users/maariabajwa/zypherpunk_cypherpunk/threading')
 
     build_threads(input_path, output_path)
