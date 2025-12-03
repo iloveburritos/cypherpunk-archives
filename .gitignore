@@ -18,3 +18,5 @@ cryptome/
 parsed/
 cleaned/
 filtered/
+threading/
+final/
