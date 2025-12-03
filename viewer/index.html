@@ -713,7 +713,12 @@
             activeFilterDisplay.textContent = `Showing threads with ${personName}`;
             activeFilterDisplay.classList.add('visible');
 
+            // Switch back to thread list view if viewing a thread detail
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
             applyFilters();
+            window.scrollTo(0, 0);
         }
 
         // Clear person filter
@@ -724,7 +729,13 @@
             });
             clearFilterBtn.classList.add('hidden');
             activeFilterDisplay.classList.remove('visible');
+
+            // Switch back to thread list view if viewing a thread detail
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
             applyFilters();
+            window.scrollTo(0, 0);
         });
 
         // Check if email belongs to a person
