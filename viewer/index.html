@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cypherpunk Mailing List Archive (1992-1999)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #00ff00;
+            font-size: 1.5rem;
+            font-weight: normal;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .stats-bar span {
+            color: #00ff00;
+        }
+
+        /* Search and Filters */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #00ff00;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group label {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .filter-group select {
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #00ff00;
+        }
+
+        /* Thread List */
+        .thread-list {
+            border: 1px solid #333;
+        }
+
+        .thread-item {
+            padding: 15px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .thread-item:hover {
+            background: #151515;
+        }
+
+        .thread-item:last-child {
+            border-bottom: none;
+        }
+
+        .thread-subject {
+            color: #00ff00;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .thread-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.8rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .thread-meta .author {
+            color: #888;
+        }
+
+        .thread-meta .count {
+            color: #ffaa00;
+        }
+
+        .thread-meta .pgp {
+            color: #ff6600;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: #00ff00;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Thread Detail View */
+        .thread-detail {
+            display: none;
+        }
+
+        .thread-detail.active {
+            display: block;
+        }
+
+        .thread-list-view.hidden {
+            display: none;
+        }
+
+        .back-btn {
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid #333;
+            color: #00ff00;
+            font-family: inherit;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            border-color: #00ff00;
+        }
+
+        .thread-header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .thread-header h2 {
+            color: #00ff00;
+            font-size: 1.2rem;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .thread-header .meta {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Email Messages */
+        .email-message {
+            border: 1px solid #333;
+            margin-bottom: 15px;
+            background: #0f0f0f;
+        }
+
+        .email-message.reply {
+            margin-left: 30px;
+            border-left: 2px solid #333;
+        }
+
+        .email-message.reply.depth-2 { margin-left: 60px; }
+        .email-message.reply.depth-3 { margin-left: 90px; }
+        .email-message.reply.depth-4 { margin-left: 120px; }
+        .email-message.reply.depth-5 { margin-left: 150px; }
+
+        .email-header {
+            padding: 12px 15px;
+            background: #151515;
+            border-bottom: 1px solid #222;
+            font-size: 0.85rem;
+        }
+
+        .email-header .from {
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+
+        .email-header .date {
+            color: #666;
+        }
+
+        .email-header .subject {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .email-body {
+            padding: 15px;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+            color: #ccc;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .email-body.collapsed {
+            max-height: 150px;
+            position: relative;
+        }
+
+        .email-body.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(transparent, #0f0f0f);
+        }
+
+        .expand-btn {
+            padding: 5px 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #888;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin: 10px 15px 15px;
+        }
+
+        .expand-btn:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+
+        .pgp-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #1a1500;
+            border: 1px solid #ff6600;
+            color: #ff6600;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .email-message.reply {
+                margin-left: 15px;
+            }
+
+            .email-message.reply.depth-2 { margin-left: 30px; }
+            .email-message.reply.depth-3 { margin-left: 45px; }
+            .email-message.reply.depth-4,
+            .email-message.reply.depth-5 { margin-left: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cypherpunk Mailing List Archive</h1>
+            <div class="subtitle">1992-1999 | Cryptography, Privacy, Digital Freedom</div>
+            <div class="stats-bar">
+                <div><span id="thread-count">--</span> threads</div>
+                <div><span id="email-count">--</span> messages</div>
+                <div><span id="filtered-count">--</span> shown</div>
+            </div>
+        </header>
+
+        <div class="thread-list-view">
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search subjects, authors...">
+                </div>
+                <div class="filter-group">
+                    <label>Year:</label>
+                    <select id="year-filter">
+                        <option value="">All Years</option>
+                        <option value="1992">1992</option>
+                        <option value="1993">1993</option>
+                        <option value="1994">1994</option>
+                        <option value="1995">1995</option>
+                        <option value="1996">1996</option>
+                        <option value="1997">1997</option>
+                        <option value="1998">1998</option>
+                        <option value="1999">1999</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Size:</label>
+                    <select id="size-filter">
+                        <option value="">All Sizes</option>
+                        <option value="1">Single message</option>
+                        <option value="2-5">2-5 messages</option>
+                        <option value="6-25">6-25 messages</option>
+                        <option value="26+">26+ messages</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Sort:</label>
+                    <select id="sort-order">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="size-desc">Most Messages</option>
+                        <option value="size-asc">Fewest Messages</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="thread-list" class="thread-list">
+                <div class="loading">Loading archive</div>
+            </div>
+
+            <div class="pagination">
+                <button id="prev-btn" disabled>&lt; Previous</button>
+                <span class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+                <button id="next-btn">Next &gt;</button>
+            </div>
+        </div>
+
+        <div id="thread-detail" class="thread-detail">
+            <button class="back-btn" id="back-btn">&lt; Back to list</button>
+            <div class="thread-header">
+                <h2 id="detail-subject"></h2>
+                <div class="meta" id="detail-meta"></div>
+            </div>
+            <div id="email-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let threads = [];
+        let emails = {};
+        let filteredThreads = [];
+        let currentPage = 1;
+        const perPage = 50;
+
+        // DOM Elements
+        const threadListEl = document.getElementById('thread-list');
+        const threadListView = document.querySelector('.thread-list-view');
+        const threadDetail = document.getElementById('thread-detail');
+        const searchInput = document.getElementById('search-input');
+        const yearFilter = document.getElementById('year-filter');
+        const sizeFilter = document.getElementById('size-filter');
+        const sortOrder = document.getElementById('sort-order');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentPageEl = document.getElementById('current-page');
+        const totalPagesEl = document.getElementById('total-pages');
+        const backBtn = document.getElementById('back-btn');
+
+        // Load data
+        async function loadData() {
+            try {
+                // Load threads
+                const threadsResp = await fetch('../final/threads.json');
+                threads = await threadsResp.json();
+
+                // Load emails
+                const emailsResp = await fetch('../final/emails.json');
+                const emailsArr = await emailsResp.json();
+                emails = {};
+                emailsArr.forEach(e => emails[e.id] = e);
+
+                // Update stats
+                document.getElementById('thread-count').textContent = threads.length.toLocaleString();
+                document.getElementById('email-count').textContent = emailsArr.length.toLocaleString();
+
+                // Initial render
+                applyFilters();
+            } catch (err) {
+                threadListEl.innerHTML = `<div class="loading" style="color: #ff0000;">Error loading data: ${err.message}<br><br>Make sure you're running from the viewer directory with the final/ folder accessible.</div>`;
+            }
+        }
+
+        // Filter and sort
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const year = yearFilter.value;
+            const size = sizeFilter.value;
+            const sort = sortOrder.value;
+
+            filteredThreads = threads.filter(t => {
+                // Search
+                if (searchTerm) {
+                    const matchSubject = (t.subject || '').toLowerCase().includes(searchTerm);
+                    const matchAuthor = (t.root_author || '').toLowerCase().includes(searchTerm);
+                    const matchParticipants = (t.participants || []).some(p => p.toLowerCase().includes(searchTerm));
+                    if (!matchSubject && !matchAuthor && !matchParticipants) return false;
+                }
+
+                // Year
+                if (year && String(t.year_start) !== year) return false;
+
+                // Size
+                if (size) {
+                    const count = t.message_count;
+                    if (size === '1' && count !== 1) return false;
+                    if (size === '2-5' && (count < 2 || count > 5)) return false;
+                    if (size === '6-25' && (count < 6 || count > 25)) return false;
+                    if (size === '26+' && count < 26) return false;
+                }
+
+                return true;
+            });
+
+            // Sort
+            filteredThreads.sort((a, b) => {
+                switch (sort) {
+                    case 'date-desc':
+                        return (b.date_start || '').localeCompare(a.date_start || '');
+                    case 'date-asc':
+                        return (a.date_start || '').localeCompare(b.date_start || '');
+                    case 'size-desc':
+                        return b.message_count - a.message_count;
+                    case 'size-asc':
+                        return a.message_count - b.message_count;
+                }
+            });
+
+            currentPage = 1;
+            renderThreadList();
+        }
+
+        // Render thread list
+        function renderThreadList() {
+            const totalPages = Math.ceil(filteredThreads.length / perPage);
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+            const pageThreads = filteredThreads.slice(start, end);
+
+            document.getElementById('filtered-count').textContent = filteredThreads.length.toLocaleString();
+            currentPageEl.textContent = currentPage;
+            totalPagesEl.textContent = totalPages || 1;
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage >= totalPages;
+
+            if (pageThreads.length === 0) {
+                threadListEl.innerHTML = '<div class="thread-item">No threads match your filters</div>';
+                return;
+            }
+
+            threadListEl.innerHTML = pageThreads.map(t => {
+                const date = t.date_start ? new Date(t.date_start).toLocaleDateString() : 'Unknown date';
+                const pgpBadge = t.has_pgp ? '<span class="pgp">PGP</span>' : '';
+
+                return `
+                    <div class="thread-item" data-id="${t.id}">
+                        <div class="thread-subject">${escapeHtml(t.subject || '(No Subject)')}</div>
+                        <div class="thread-meta">
+                            <span class="author">${escapeHtml(t.root_author || 'Unknown')}</span>
+                            <span>${date}</span>
+                            <span class="count">${t.message_count} message${t.message_count !== 1 ? 's' : ''}</span>
+                            ${t.participant_count > 1 ? `<span>${t.participant_count} participants</span>` : ''}
+                            ${pgpBadge}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add click handlers
+            threadListEl.querySelectorAll('.thread-item').forEach(el => {
+                el.addEventListener('click', () => showThread(el.dataset.id));
+            });
+        }
+
+        // Show thread detail
+        function showThread(threadId) {
+            const thread = threads.find(t => t.id === threadId);
+            if (!thread) return;
+
+            threadListView.classList.add('hidden');
+            threadDetail.classList.add('active');
+
+            document.getElementById('detail-subject').textContent = thread.subject || '(No Subject)';
+
+            const dateRange = thread.date_start === thread.date_end
+                ? new Date(thread.date_start).toLocaleDateString()
+                : `${new Date(thread.date_start).toLocaleDateString()} - ${new Date(thread.date_end).toLocaleDateString()}`;
+
+            document.getElementById('detail-meta').innerHTML = `
+                ${thread.message_count} message${thread.message_count !== 1 ? 's' : ''} |
+                ${thread.participant_count} participant${thread.participant_count !== 1 ? 's' : ''} |
+                ${dateRange}
+                ${thread.has_pgp ? '<span class="pgp-badge">Contains PGP</span>' : ''}
+            `;
+
+            // Build email tree
+            const threadEmails = thread.message_ids
+                .map(id => {
+                    // Find email by message_id
+                    return Object.values(emails).find(e => e.message_id === id);
+                })
+                .filter(e => e);
+
+            // Sort by date
+            threadEmails.sort((a, b) => (a.date_parsed || '').localeCompare(b.date_parsed || ''));
+
+            // Calculate depth for each email
+            const emailDepths = {};
+            const msgIdToEmail = {};
+            threadEmails.forEach(e => msgIdToEmail[e.message_id] = e);
+
+            function getDepth(email, visited = new Set()) {
+                if (!email || visited.has(email.message_id)) return 0;
+                if (emailDepths[email.message_id] !== undefined) return emailDepths[email.message_id];
+
+                visited.add(email.message_id);
+                const parent = email.parent_id ? msgIdToEmail[email.parent_id] : null;
+                const depth = parent ? getDepth(parent, visited) + 1 : 0;
+                emailDepths[email.message_id] = depth;
+                return depth;
+            }
+
+            threadEmails.forEach(e => getDepth(e));
+
+            document.getElementById('email-list').innerHTML = threadEmails.map(e => {
+                const depth = Math.min(emailDepths[e.message_id] || 0, 5);
+                const depthClass = depth > 0 ? `reply depth-${depth}` : '';
+                const date = e.date_parsed ? new Date(e.date_parsed).toLocaleString() : 'Unknown date';
+                const body = e.body || '(No content)';
+                const isLong = body.length > 1000;
+
+                return `
+                    <div class="email-message ${depthClass}">
+                        <div class="email-header">
+                            <div class="from">${escapeHtml(e.from_name || e.from_email || 'Unknown')} &lt;${escapeHtml(e.from_email || '')}&gt;${e.has_pgp ? '<span class="pgp-badge">PGP</span>' : ''}</div>
+                            <div class="date">${date}</div>
+                            ${e.subject !== thread.subject ? `<div class="subject">Subject: ${escapeHtml(e.subject || '')}</div>` : ''}
+                        </div>
+                        <div class="email-body ${isLong ? 'collapsed' : ''}" id="body-${e.id}">${escapeHtml(body)}</div>
+                        ${isLong ? `<button class="expand-btn" onclick="toggleBody('${e.id}')">Show more</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            window.scrollTo(0, 0);
+        }
+
+        // Toggle email body expand/collapse
+        window.toggleBody = function(id) {
+            const body = document.getElementById('body-' + id);
+            const btn = body.nextElementSibling;
+            if (body.classList.contains('collapsed')) {
+                body.classList.remove('collapsed');
+                btn.textContent = 'Show less';
+            } else {
+                body.classList.add('collapsed');
+                btn.textContent = 'Show more';
+            }
+        };
+
+        // Back to list
+        backBtn.addEventListener('click', () => {
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+        });
+
+        // Pagination
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderThreadList();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredThreads.length / perPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderThreadList();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        // Filter handlers
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(applyFilters, 300);
+        });
+
+        yearFilter.addEventListener('change', applyFilters);
+        sizeFilter.addEventListener('change', applyFilters);
+        sortOrder.addEventListener('change', applyFilters);
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (threadDetail.classList.contains('active') && e.key === 'Escape') {
+                backBtn.click();
+            }
+        });
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
