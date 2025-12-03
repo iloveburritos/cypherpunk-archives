@@ -77,12 +77,25 @@
             color: #00ff00;
         }
 
-        .person-item .count {
+        .person-item .stats {
             color: #666;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            text-align: right;
         }
 
-        .person-item.active .count {
+        .person-item .stats .posts {
+            color: #888;
+        }
+
+        .person-item .stats .threads {
+            color: #666;
+        }
+
+        .person-item.active .stats .posts {
+            color: #00cc00;
+        }
+
+        .person-item.active .stats .threads {
             color: #00aa00;
         }
 
@@ -673,7 +686,10 @@
                 return `
                     <li class="person-item" data-person="${escapeHtml(name)}">
                         <span class="name">${escapeHtml(name)}</span>
-                        <span class="count">${threadCount}</span>
+                        <span class="stats">
+                            <span class="posts">${postCount.toLocaleString()} msgs</span><br>
+                            <span class="threads">${threadCount.toLocaleString()} threads</span>
+                        </span>
                     </li>
                 `;
             }).join('');
