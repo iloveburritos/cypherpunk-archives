@@ -591,11 +591,9 @@
             `;
 
             // Build email tree
+            // thread.message_ids contains our internal IDs (hash IDs), not RFC message_ids
             const threadEmails = thread.message_ids
-                .map(id => {
-                    // Find email by message_id
-                    return Object.values(emails).find(e => e.message_id === id);
-                })
+                .map(id => emails[id])
                 .filter(e => e);
 
             // Sort by date
