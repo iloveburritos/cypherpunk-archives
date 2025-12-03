@@ -3,7 +3,10 @@
 Notable Cypherpunks Filter
 
 Filters the email archive to include only threads that involve notable cypherpunks.
-Includes all messages in threads where at least one notable person participated.
+For each notable person's message, includes:
+- The path from root to the notable person's message (ancestors)
+- All descendants of the notable person's message
+- If multiple notable people are in the same thread, their paths are merged
 
 Output:
 - notable/threads.json: Filtered threads
@@ -266,12 +269,56 @@ def get_notable_person(from_email: str, email_to_person: dict) -> str:
     return None
 
 
+def get_ancestors(email, emails_by_message_id):
+    """Get all ancestor emails (path to root) for an email."""
+    ancestors = []
+    current = email
+    visited = set()
+
+    while current and current.get('parent_id'):
+        if current['message_id'] in visited:
+            break  # Prevent cycles
+        visited.add(current['message_id'])
+
+        parent = emails_by_message_id.get(current['parent_id'])
+        if parent:
+            ancestors.append(parent)
+            current = parent
+        else:
+            break
+
+    return ancestors
+
+
+def get_descendants(email, children_index):
+    """Get all descendant emails for an email."""
+    descendants = []
+    to_visit = [email]
+    visited = set()
+
+    while to_visit:
+        current = to_visit.pop(0)
+        msg_id = current.get('message_id')
+
+        if msg_id in visited:
+            continue
+        visited.add(msg_id)
+
+        # Get children of current message
+        for child in children_index.get(msg_id, []):
+            if child.get('message_id') not in visited:
+                descendants.append(child)
+                to_visit.append(child)
+
+    return descendants
+
+
 def filter_notable_threads(
     threads_path: Path,
     emails_path: Path,
     output_path: Path
 ):
-    """Filter threads to only include those with notable cypherpunks."""
+    """Filter threads to only include paths involving notable cypherpunks."""
 
     print("Loading data...")
     with open(threads_path, 'r') as f:
@@ -284,7 +331,15 @@ def filter_notable_threads(
 
     # Build indexes
     emails_by_id = {e['id']: e for e in all_emails}
+    emails_by_message_id = {e['message_id']: e for e in all_emails if e.get('message_id')}
     threads_by_id = {t['id']: t for t in all_threads}
+
+    # Build children index (parent_id -> list of children)
+    children_index = defaultdict(list)
+    for email in all_emails:
+        parent_id = email.get('parent_id')
+        if parent_id:
+            children_index[parent_id].append(email)
 
     # Build email patterns
     patterns, email_to_person = build_email_patterns()
@@ -303,29 +358,83 @@ def filter_notable_threads(
 
     print(f"Found {len(notable_emails):,} emails from notable cypherpunks")
 
-    # Find all threads that contain at least one notable email
-    print("Finding threads with notable participants...")
-    notable_thread_ids = set()
-
+    # Group notable emails by thread
+    notable_by_thread = defaultdict(list)
     for email in notable_emails:
         thread_id = email.get('thread_id')
         if thread_id:
-            notable_thread_ids.add(thread_id)
+            notable_by_thread[thread_id].append(email)
 
-    print(f"Found {len(notable_thread_ids):,} threads with notable participants")
+    print(f"Found {len(notable_by_thread):,} threads with notable participants")
 
-    # Get all threads and all emails in those threads
+    # For each thread, collect path + descendants for each notable email
+    print("Building filtered threads (path + descendants for notable messages)...")
     filtered_threads = []
     filtered_email_ids = set()
 
-    for thread in all_threads:
-        if thread['id'] in notable_thread_ids:
-            filtered_threads.append(thread)
-            # Add all email IDs in this thread
-            for email_id in thread.get('message_ids', []):
-                filtered_email_ids.add(email_id)
+    for thread_id, thread_notable_emails in notable_by_thread.items():
+        thread = threads_by_id.get(thread_id)
+        if not thread:
+            continue
 
-    # Get all emails in those threads
+        # Collect all emails to include for this thread
+        thread_filtered_ids = set()
+
+        for notable_email in thread_notable_emails:
+            # Add the notable email itself
+            thread_filtered_ids.add(notable_email['id'])
+
+            # Add ancestors (path to root)
+            ancestors = get_ancestors(notable_email, emails_by_message_id)
+            for ancestor in ancestors:
+                thread_filtered_ids.add(ancestor['id'])
+
+            # Add descendants
+            descendants = get_descendants(notable_email, children_index)
+            for descendant in descendants:
+                thread_filtered_ids.add(descendant['id'])
+
+        # Get the actual emails for this thread
+        thread_emails = [emails_by_id[eid] for eid in thread_filtered_ids if eid in emails_by_id]
+
+        if not thread_emails:
+            continue
+
+        # Sort by date
+        thread_emails.sort(key=lambda e: e.get('date_parsed', '') or '')
+
+        # Build filtered thread metadata
+        participants = list(set(
+            e.get('from_email') or e.get('from_raw', '')
+            for e in thread_emails
+            if e.get('from_email') or e.get('from_raw')
+        ))
+
+        dates = [e.get('date_parsed') for e in thread_emails if e.get('date_parsed')]
+
+        filtered_thread = {
+            'id': thread['id'],
+            'root_message_id': thread.get('root_message_id'),
+            'subject': thread.get('subject', ''),
+            'normalized_subject': thread.get('normalized_subject', ''),
+            'message_ids': [e['id'] for e in thread_emails],
+            'message_count': len(thread_emails),
+            'original_message_count': thread.get('message_count', 0),
+            'participants': participants,
+            'participant_count': len(participants),
+            'date_start': min(dates) if dates else None,
+            'date_end': max(dates) if dates else None,
+            'year_start': int(min(dates)[:4]) if dates and min(dates) else None,
+            'depth': thread.get('depth', 0),
+            'root_author': thread.get('root_author', ''),
+            'has_pgp': any(e.get('has_pgp') for e in thread_emails),
+            'notable_count': len(thread_notable_emails),
+        }
+
+        filtered_threads.append(filtered_thread)
+        filtered_email_ids.update(thread_filtered_ids)
+
+    # Get all filtered emails
     filtered_emails = [
         emails_by_id[eid] for eid in filtered_email_ids
         if eid in emails_by_id
