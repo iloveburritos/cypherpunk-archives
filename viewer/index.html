@@ -1167,7 +1167,14 @@
         async function loadAllMail() {
             try {
                 const allThreadsResp = await fetch('../final/threads.json');
-                allThreads = await allThreadsResp.json();
+                if (!allThreadsResp.ok) {
+                    throw new Error(`HTTP ${allThreadsResp.status}: ${allThreadsResp.statusText}`);
+                }
+                const text = await allThreadsResp.text();
+                if (text.startsWith('version https://git-lfs')) {
+                    throw new Error('File is still an LFS pointer - please clear browser cache');
+                }
+                allThreads = JSON.parse(text);
                 allCount.textContent = allThreads.length.toLocaleString();
                 return true;
             } catch (err) {
