@@ -1107,6 +1107,62 @@
 
             .email-card-header {
                 padding: 12px;
+                flex-wrap: wrap;
+            }
+
+            .email-card.collapsed .email-card-header {
+                flex-wrap: nowrap;
+            }
+
+            .email-card.collapsed .email-header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+
+            .email-card.collapsed .email-from {
+                display: block;
+            }
+
+            .email-card.collapsed .email-from .sender-link {
+                display: block;
+                font-weight: 500;
+            }
+
+            .email-card.collapsed .email-from .email-address {
+                display: none;
+            }
+
+            .email-card.collapsed .email-snippet {
+                display: none;
+            }
+
+            .email-card .email-date {
+                flex-shrink: 0;
+                margin-left: auto;
+            }
+
+            /* Expanded email card on mobile */
+            .email-card:not(.collapsed) .email-header-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .email-card:not(.collapsed) .email-from {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                align-items: baseline;
+            }
+
+            .email-card:not(.collapsed) .email-date {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+            }
+
+            .email-card:not(.collapsed) .email-card-header {
+                position: relative;
             }
 
             .email-body {
