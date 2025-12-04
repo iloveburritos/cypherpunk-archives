@@ -19,4 +19,7 @@ parsed/
 cleaned/
 filtered/
 threading/
-final/
+final/emails.json
+final/index_by_author.json
+final/index_by_year.json
+final/stats.json

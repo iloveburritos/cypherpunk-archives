@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cypherpunk Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f6f8fc;
+            color: #202124;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 256px;
+            padding-left: 4px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00ff00 0%, #00aa00 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 22px;
+            color: #5f6368;
+        }
+
+        .logo-text span {
+            color: #202124;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #eaf1fb;
+            border-radius: 24px;
+            padding: 0 16px;
+            height: 48px;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .search-box:focus-within {
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+
+        .search-icon {
+            color: #5f6368;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            color: #202124;
+        }
+
+        .search-box input::placeholder {
+            color: #5f6368;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            padding-top: 64px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            padding: 8px 0;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            background: #f6f8fc;
+        }
+
+        /* Nav items */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 24px 6px 12px;
+            margin: 2px 8px;
+            border-radius: 0 16px 16px 0;
+            cursor: pointer;
+            transition: background 0.1s;
+            gap: 12px;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .nav-item:hover {
+            background: #e8eaed;
+        }
+
+        .nav-item.active {
+            background: #d3e3fd;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-count {
+            margin-left: auto;
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .nav-item.active .nav-count {
+            color: #001d35;
+        }
+
+        .labels-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 8px 16px;
+        }
+
+        .sidebar-section {
+            padding: 8px 12px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 16px;
+            margin-top: 8px;
+        }
+
+        .person-list {
+            list-style: none;
+        }
+
+        .person-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px 8px 16px;
+            margin: 1px 8px;
+            border-radius: 0 16px 16px 0;
+            cursor: pointer;
+            transition: background 0.1s;
+            gap: 12px;
+        }
+
+        .person-item:hover {
+            background: #e8eaed;
+        }
+
+        .person-item.active {
+            background: #d3e3fd;
+            color: #001d35;
+        }
+
+        .person-name {
+            font-size: 14px;
+            font-weight: 400;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
+            line-height: 1;
+        }
+
+        .person-count {
+            font-size: 14px;
+            color: #5f6368;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .person-item.active .person-count {
+            color: #001d35;
+        }
+
+        .info-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid #dadce0;
+            color: #5f6368;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .person-item:hover .info-btn {
+            opacity: 1;
+        }
+
+        .info-btn:hover {
+            background: #fff;
+            border-color: #1a73e8;
+            color: #1a73e8;
+        }
+
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 256px;
+            padding: 0;
+            background: #fff;
+            height: calc(100vh - 64px);
+            border-radius: 16px 0 0 0;
+            overflow-y: auto;
+        }
+
+        .label-icon {
+            width: 20px;
+            height: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .label-icon svg {
+            width: 20px;
+            height: 14px;
+            display: block;
+        }
+
+        /* Thread list */
+        .thread-list-view {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .thread-list-container {
+            padding: 0;
+        }
+
+        .thread-list {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+        }
+
+        .list-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 16px;
+        }
+
+        .list-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            color: #5f6368;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .action-btn:hover {
+            background: #f1f3f4;
+        }
+
+        .list-info {
+            flex: 1;
+            text-align: right;
+            color: #5f6368;
+            font-size: 13px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 12px;
+            padding: 8px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 13px;
+            color: #3c4043;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+
+        /* Thread rows */
+        .thread-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid #f1f3f4;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .thread-row:hover {
+            background: #f5f5f5;
+            box-shadow: inset 3px 0 0 #1a73e8;
+        }
+
+        .thread-row.unread {
+            background: #fff;
+        }
+
+        .thread-row.unread .thread-sender,
+        .thread-row.unread .thread-subject {
+            font-weight: 500;
+        }
+
+        .thread-sender {
+            width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #202124;
+            flex-shrink: 0;
+        }
+
+        .sender-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .thread-count {
+            font-size: 12px;
+            color: #5f6368;
+            flex-shrink: 0;
+        }
+
+        .thread-content {
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 32px;
+        }
+
+        .thread-subject {
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .thread-snippet {
+            color: #9aa0a6;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .thread-date {
+            font-size: 12px;
+            color: #5f6368;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .notable-badge {
+            font-size: 10px;
+            color: #1a73e8;
+            background: #e8f0fe;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 8px 16px;
+            gap: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #5f6368;
+            margin-right: 16px;
+        }
+
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: #5f6368;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 18px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f1f3f4;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Thread detail view */
+        .thread-detail {
+            display: none;
+            padding: 0;
+        }
+
+        .thread-detail.active {
+            display: block;
+        }
+
+        .thread-list-view.hidden {
+            display: none;
+        }
+
+        .detail-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: #5f6368;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            background: #f1f3f4;
+        }
+
+        .detail-title {
+            flex: 1;
+        }
+
+        .detail-title h1 {
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .detail-meta {
+            font-size: 13px;
+            color: #5f6368;
+        }
+
+        .detail-actions {
+            display: none;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .detail-actions.visible {
+            display: flex;
+        }
+
+        .detail-action-btn {
+            padding: 8px 16px;
+            border: 1px solid #dadce0;
+            background: #fff;
+            color: #5f6368;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.1s, border-color 0.1s;
+        }
+
+        .detail-action-btn:hover {
+            background: #f1f3f4;
+            border-color: #5f6368;
+        }
+
+        /* Email messages */
+        .email-list {
+            padding: 0 24px 24px;
+        }
+
+        .email-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .email-card.notable {
+            border-color: #1a73e8;
+        }
+
+        .email-card.collapsed {
+            cursor: pointer;
+        }
+
+        .email-card.collapsed:hover {
+            background: #f5f5f5;
+        }
+
+        .email-card.collapsed .email-body,
+        .email-card.collapsed .expand-btn,
+        .email-card.collapsed .email-to {
+            display: none;
+        }
+
+        .email-card-header {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            background: #f8f9fa;
+            gap: 12px;
+        }
+
+        .email-card.collapsed .email-card-header {
+            background: transparent;
+            padding: 12px 16px;
+            align-items: center;
+        }
+
+        .email-card.notable .email-card-header {
+            background: #e8f0fe;
+        }
+
+        .email-card.collapsed.notable .email-card-header {
+            background: transparent;
+        }
+
+        .email-snippet {
+            display: none;
+            color: #5f6368;
+            font-size: 14px;
+            font-weight: 400;
+            margin-left: 4px;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-card.collapsed .email-snippet {
+            display: inline;
+        }
+
+        .email-card.collapsed .email-header-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .email-card.collapsed .email-from {
+            flex-shrink: 0;
+        }
+
+        .email-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .email-header-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .email-from {
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .sender-link {
+            cursor: pointer;
+        }
+
+        .sender-link:hover {
+            color: #1a73e8;
+        }
+
+        .email-address {
+            font-weight: 400;
+            color: #5f6368;
+            margin-left: 4px;
+            cursor: pointer;
+        }
+
+        .email-address:hover {
+            color: #1a73e8;
+            text-decoration: underline;
+        }
+
+        .email-from .notable-tag {
+            font-size: 11px;
+            font-weight: 400;
+            color: #1a73e8;
+            background: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid #1a73e8;
+        }
+
+        .email-to {
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 2px;
+        }
+
+        .email-date {
+            font-size: 12px;
+            color: #5f6368;
+            white-space: nowrap;
+        }
+
+        .email-body {
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #202124;
+            white-space: pre-wrap;
+            font-family: 'Roboto', sans-serif;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .email-body.collapsed {
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .email-body.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(transparent, white);
+        }
+
+        .expand-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            background: #f8f9fa;
+            color: #1a73e8;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .expand-btn:hover {
+            background: #e8f0fe;
+        }
+
+        /* Bio tooltip */
+        .bio-tooltip {
+            display: none;
+            position: fixed;
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            max-width: 320px;
+            font-size: 13px;
+            color: #202124;
+            line-height: 1.5;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .bio-tooltip.visible {
+            display: block;
+        }
+
+        .bio-tooltip .bio-name {
+            font-weight: 500;
+            color: #1a73e8;
+            margin-bottom: 8px;
+        }
+
+        .bio-tooltip .bio-text {
+            color: #5f6368;
+        }
+
+        /* Active filter display */
+        .active-filter {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #e8f0fe;
+            border-bottom: 1px solid #d3e3fd;
+        }
+
+        .active-filter.visible {
+            display: flex;
+        }
+
+        .active-filter-text {
+            font-size: 13px;
+            color: #1a73e8;
+        }
+
+        .active-filter-clear {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            color: #1a73e8;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: #5f6368;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                border-radius: 0;
+            }
+
+            .logo {
+                width: auto;
+            }
+
+            .thread-sender {
+                width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">CP</div>
+            <div class="logo-text"><span>Cypherpunk</span> Archive</div>
+        </div>
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="search-input" placeholder="Search mail">
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="nav-item active" id="nav-important" data-view="important">
+                    <span class="nav-icon">⭐</span>
+                    <span>Important</span>
+                    <span class="nav-count" id="important-count">-</span>
+                </div>
+                <div class="nav-item" id="nav-all" data-view="all">
+                    <span class="nav-icon">📧</span>
+                    <span>All Mail</span>
+                    <span class="nav-count" id="all-count">-</span>
+                </div>
+            </div>
+            <div class="labels-divider"></div>
+            <div class="sidebar-title">Labels</div>
+            <ul class="person-list" id="person-list">
+                <li class="loading">Loading...</li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="active-filter" id="active-filter">
+                <span class="active-filter-text" id="active-filter-text"></span>
+                <button class="active-filter-clear" id="active-filter-clear">Clear filter</button>
+            </div>
+
+            <div class="thread-list-view" id="thread-list-view">
+                <div class="filter-controls">
+                    <select class="filter-select" id="year-filter">
+                        <option value="">All Years</option>
+                        <option value="1992">1992</option>
+                        <option value="1993">1993</option>
+                        <option value="1994">1994</option>
+                        <option value="1995">1995</option>
+                        <option value="1996">1996</option>
+                        <option value="1997">1997</option>
+                        <option value="1998">1998</option>
+                        <option value="1999">1999</option>
+                    </select>
+                    <select class="filter-select" id="sort-order">
+                        <option value="date-asc">Oldest First</option>
+                        <option value="date-desc">Newest First</option>
+                        <option value="size-desc">Most Messages</option>
+                        <option value="size-asc">Fewest Messages</option>
+                    </select>
+                </div>
+
+                <div class="list-header">
+                    <div class="list-info" id="list-info">Loading...</div>
+                </div>
+
+                <ul class="thread-list" id="thread-list">
+                    <li class="loading">Loading archive...</li>
+                </ul>
+
+                <div class="pagination">
+                    <span class="pagination-info" id="pagination-info"></span>
+                    <button class="pagination-btn" id="prev-btn" disabled>&#8249;</button>
+                    <button class="pagination-btn" id="next-btn">&#8250;</button>
+                </div>
+            </div>
+
+            <div class="thread-detail" id="thread-detail">
+                <div class="detail-header">
+                    <button class="back-btn" id="back-btn">&#8592;</button>
+                    <div class="detail-title">
+                        <h1 id="detail-subject"></h1>
+                        <div class="detail-meta" id="detail-meta"></div>
+                    </div>
+                    <div class="detail-actions" id="detail-actions">
+                        <button class="detail-action-btn" id="expand-all-btn">Expand all</button>
+                        <button class="detail-action-btn" id="collapse-all-btn">Collapse all</button>
+                    </div>
+                </div>
+                <div class="email-list" id="email-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="bio-tooltip" id="bio-tooltip">
+        <div class="bio-name" id="bio-name"></div>
+        <div class="bio-text" id="bio-text"></div>
+    </div>
+
+    <script>
+        // State
+        let notableThreads = [];
+        let allThreads = [];
+        let starredThreads = [];
+        let threads = [];
+        let emails = {};
+        let allEmails = {};
+        let notableAuthors = {};
+        let notableStats = {};
+        let starredData = {};
+        let filteredThreads = [];
+        let currentPage = 1;
+        let selectedPerson = null;
+        let currentView = 'important'; // 'important', 'all', or 'starred'
+        const perPage = 50;
+
+        // Build reverse lookup: email -> person name
+        let emailToPerson = {};
+
+        // Bios for notable cypherpunks
+        const personBios = {
+            "Timothy C. May": "Co-founder of the Cypherpunks; author of The Crypto Anarchist Manifesto, shaping the modern privacy-through-cryptography ethos.",
+            "Perry E. Metzger": "Founder of the Cypherpunks mailing list; drove practical deployment of strong cryptography and anti-surveillance activism.",
+            "Jim Bell": "Radical cypherpunk economist known for \"Assassination Politics,\" exploring cryptographically-enabled market anonymity.",
+            "Eric Hughes": "Author of A Cypherpunk's Manifesto and co-founder of the movement; champion of anonymous digital identity.",
+            "Duncan Frissell": "Libertarian writer and cypherpunk advocate focused on digital rights, privacy law, and crypto-backed civil liberties.",
+            "Black Unicorn": "Pseudonymous cryptography expert known for sharp, technical privacy analysis within the early cypherpunk community.",
+            "Lucky Green": "Operator of early remailer and anonymity infrastructure; contributor to PGP and digital privacy systems.",
+            "Adam Back": "Inventor of Hashcash (Bitcoin's PoW precursor); long-time cypherpunk driving anonymous e-cash and privacy tech.",
+            "James A. Donald": "Early Bitcoin discussant and cryptography commentator known for critiques of privacy protocols and scaling.",
+            "Hal Finney": "Legendary cryptographer; creator of PGP 2.0, reusable proofs of work, and first recipient of a Bitcoin transaction.",
+            "John Gilmore": "EFF co-founder and early cypherpunk pushing strong crypto export freedom and anonymous networks.",
+            "Carl Ellison": "Pioneer in public-key infrastructure and digital certificates; contributor to SPKI and secure identity protocols.",
+            "Phil Karn": "Engineer who helped liberalize US crypto-export laws by challenging restrictions on privacy tech.",
+            "Rishab Aiyer Ghosh": "Researcher mapping open-source ecosystems and digital freedom economics tied to privacy online.",
+            "Bryce 'Zooko' Wilcox": "Creator of Zcash; long-time privacy technologist known for naming Zooko's Triangle (identity properties).",
+            "Lance Cottrell": "Founder of Anonymizer.com; built one of the earliest commercial privacy and anonymous browsing services.",
+            "Matt Blaze": "Cryptographer who exposed Clipper Chip vulnerabilities; major critic of government backdoors in privacy tech.",
+            "Ian Goldberg": "Designer of Off-the-Record (OTR) Messaging; Tor Project contributor and world-class privacy cryptographer.",
+            "Wei Dai": "Creator of b-money (a Bitcoin precursor) and contributor to anonymity, crypto protocols, and digital freedom theory.",
+            "Johan Helsingius": "Operator of the world's most famous anonymous remailer, anon.penet.fi.",
+            "Julian Assange": "Founder of WikiLeaks; cypherpunk veteran advocating radical transparency and individual anonymity.",
+            "Eric Blossom": "Founder of GNU Radio; advocate for open, privacy-respecting communication systems.",
+            "Nick Szabo": "Creator of smart contracts and Bit Gold; thinker bridging cryptography, digital privacy, and decentralized money.",
+            "Vipul Ved Prakash": "Creator of Vipul's Razor anti-spam tool; early developer of cryptographically-driven information hygiene systems.",
+            "Bruce Schneier": "World-renowned cryptographer and author who popularized privacy security practices and government backdoor critiques.",
+            "Ryan Lackey": "Founder of HavenCo on Sealand; worked on secure hardware, private communications, and operational security systems.",
+            "Philip Zimmermann": "Creator of PGP; central figure in the crypto-export \"Crypto Wars\" defending personal privacy rights.",
+            "Marc Andreessen": "Co-author of Mosaic/Netscape; helped bring SSL and encrypted browsing to the mainstream Internet.",
+            "Ian Grigg": "Architect of Ricardian Contracts and financial cryptography systems with strong privacy foundations.",
+            "Whitfield Diffie": "Co-inventor of public-key cryptography; foundational figure enabling all modern privacy-preserving protocols.",
+            "Bram Cohen": "Creator of BitTorrent; transformed peer-to-peer sharing with decentralized, censorship-resistant distribution.",
+            "Mitch Kapor": "EFF co-founder and early Internet-rights funder supporting privacy and anti-surveillance advocacy.",
+            "John Perry Barlow": "EFF co-founder; wrote \"A Declaration of the Independence of Cyberspace,\" defending digital freedom and anonymity.",
+            "Martin Hellman": "Co-inventor of Diffie-Hellman key exchange, enabling private communication over insecure networks."
+        };
+
+        // Avatar colors
+        const avatarColors = [
+            '#1a73e8', '#ea4335', '#34a853', '#fbbc04', '#ff6d01',
+            '#46bdc6', '#7baaf7', '#ee675c', '#f439a0', '#a142f4'
+        ];
+
+        function getAvatarColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return avatarColors[Math.abs(hash) % avatarColors.length];
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(/[\s@<>]+/).filter(p => p);
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[1][0]).toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        // DOM Elements
+        const threadListEl = document.getElementById('thread-list');
+        const threadListView = document.getElementById('thread-list-view');
+        const threadDetail = document.getElementById('thread-detail');
+        const searchInput = document.getElementById('search-input');
+        const yearFilter = document.getElementById('year-filter');
+        const sortOrder = document.getElementById('sort-order');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const backBtn = document.getElementById('back-btn');
+        const personListEl = document.getElementById('person-list');
+        const activeFilter = document.getElementById('active-filter');
+        const activeFilterText = document.getElementById('active-filter-text');
+        const activeFilterClear = document.getElementById('active-filter-clear');
+        const listInfo = document.getElementById('list-info');
+        const paginationInfo = document.getElementById('pagination-info');
+        const navImportant = document.getElementById('nav-important');
+        const navAll = document.getElementById('nav-all');
+        const importantCount = document.getElementById('important-count');
+        const allCount = document.getElementById('all-count');
+        const detailActions = document.getElementById('detail-actions');
+        const expandAllBtn = document.getElementById('expand-all-btn');
+        const collapseAllBtn = document.getElementById('collapse-all-btn');
+
+        // Load data
+        async function loadData() {
+            try {
+                // First load notable data (for Important view)
+                const [authorsResp, statsResp, notableThreadsResp, notableEmailsResp, starredResp] = await Promise.all([
+                    fetch('./notable/notable_authors.json'),
+                    fetch('./notable/stats.json'),
+                    fetch('./notable/threads.json'),
+                    fetch('./notable/emails.json'),
+                    fetch('./notable/notable_emails_curated.json')
+                ]);
+
+                notableAuthors = await authorsResp.json();
+                notableStats = await statsResp.json();
+                notableThreads = await notableThreadsResp.json();
+                const notableEmailsArr = await notableEmailsResp.json();
+                starredData = await starredResp.json();
+
+                emails = {};
+                notableEmailsArr.forEach(e => emails[e.id] = e);
+
+                // Build starred threads list (this becomes Important)
+                const starredThreadIds = new Set(starredData.thread_ids || []);
+                starredThreads = notableThreads.filter(t => starredThreadIds.has(t.id));
+
+                // Build email to person lookup
+                for (const [person, emailList] of Object.entries(notableAuthors)) {
+                    for (const email of emailList) {
+                        emailToPerson[email.toLowerCase()] = person;
+                    }
+                }
+
+                // Set initial state to Important view (using starred threads)
+                threads = starredThreads;
+                importantCount.textContent = starredThreads.length.toLocaleString();
+
+                renderPersonList();
+                applyFilters();
+
+                // Load all threads in background for All Mail view
+                loadAllMail();
+            } catch (err) {
+                threadListEl.innerHTML = `<li class="loading" style="color: #d93025;">Error loading data: ${err.message}</li>`;
+            }
+        }
+
+        // Load all mail in background (threads only - emails loaded on demand)
+        async function loadAllMail() {
+            try {
+                const allThreadsResp = await fetch('./final/threads.json');
+                allThreads = await allThreadsResp.json();
+                allCount.textContent = allThreads.length.toLocaleString();
+                return true;
+            } catch (err) {
+                console.warn('Could not load all mail:', err);
+                allCount.textContent = 'N/A';
+                return false;
+            }
+        }
+
+        // Render person list
+        function renderPersonList() {
+            const sortedPeople = Object.entries(notableStats.posts_by_person || {})
+                .sort((a, b) => b[1] - a[1]);
+
+            personListEl.innerHTML = sortedPeople.map(([name, postCount]) => {
+                const threadCount = notableStats.threads_by_person?.[name] || 0;
+                const color = getAvatarColor(name);
+                return `
+                    <li class="person-item" data-person="${escapeHtml(name)}">
+                        <div class="label-icon">
+                            <svg viewBox="0 0 24 18" fill="${color}">
+                                <path d="M2 2 L2 16 Q2 17 3 17 L15 17 L22 9 L15 1 L3 1 Q2 1 2 2 Z"/>
+                            </svg>
+                        </div>
+                        <span class="person-name">${escapeHtml(name)}</span>
+                        ${personBios[name] ? `<button class="info-btn" data-person="${escapeHtml(name)}">i</button>` : ''}
+                        <span class="person-count">${postCount.toLocaleString()}</span>
+                    </li>
+                `;
+            }).join('');
+
+            personListEl.querySelectorAll('.person-item').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('info-btn')) return;
+                    selectPerson(el.dataset.person);
+                });
+            });
+
+            personListEl.querySelectorAll('.info-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showBioTooltip(btn.dataset.person, e);
+                });
+            });
+        }
+
+        // Bio tooltip
+        const bioTooltip = document.getElementById('bio-tooltip');
+        const bioNameEl = document.getElementById('bio-name');
+        const bioTextEl = document.getElementById('bio-text');
+
+        function showBioTooltip(personName, event) {
+            const bio = personBios[personName];
+            if (!bio) return;
+
+            bioNameEl.textContent = personName;
+            bioTextEl.textContent = bio;
+
+            const rect = event.target.getBoundingClientRect();
+            let left = rect.right + 10;
+            let top = rect.top;
+
+            if (left + 320 > window.innerWidth) {
+                left = rect.left - 330;
+            }
+            if (top + 100 > window.innerHeight) {
+                top = window.innerHeight - 120;
+            }
+
+            bioTooltip.style.left = left + 'px';
+            bioTooltip.style.top = top + 'px';
+            bioTooltip.classList.add('visible');
+
+            setTimeout(() => {
+                document.addEventListener('click', hideBioTooltip, { once: true });
+            }, 0);
+        }
+
+        function hideBioTooltip() {
+            bioTooltip.classList.remove('visible');
+        }
+
+        // Select person
+        function selectPerson(personName) {
+            selectedPerson = personName;
+            searchInput.value = '';
+
+            personListEl.querySelectorAll('.person-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.person === personName);
+            });
+
+            // Deselect nav items when a person is selected
+            navImportant.classList.remove('active');
+            navAll.classList.remove('active');
+
+            activeFilterText.textContent = `Showing threads with ${personName}`;
+            activeFilter.classList.add('visible');
+
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
+            applyFilters();
+            window.scrollTo(0, 0);
+        }
+
+        // Clear filter
+        function clearFilter() {
+            selectedPerson = null;
+            searchInput.value = '';
+            personListEl.querySelectorAll('.person-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            activeFilter.classList.remove('visible');
+
+            // Re-select the current view nav item
+            navImportant.classList.toggle('active', currentView === 'important');
+            navAll.classList.toggle('active', currentView === 'all');
+
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
+            applyFilters();
+            window.scrollTo(0, 0);
+        }
+
+        activeFilterClear.addEventListener('click', clearFilter);
+
+        // Check if email belongs to a person
+        function getPersonForEmail(emailAddr) {
+            if (!emailAddr) return null;
+            const normalized = emailAddr.toLowerCase().trim();
+            if (emailToPerson[normalized]) return emailToPerson[normalized];
+            for (const [pattern, person] of Object.entries(emailToPerson)) {
+                if (normalized.includes(pattern)) return person;
+            }
+            return null;
+        }
+
+        // Check if thread contains person
+        function threadContainsPerson(thread, personName) {
+            const personEmails = notableAuthors[personName] || [];
+            const normalizedEmails = personEmails.map(e => e.toLowerCase());
+            return thread.participants.some(p => {
+                const normalized = p.toLowerCase();
+                return normalizedEmails.some(pe => normalized.includes(pe));
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const year = yearFilter.value;
+            const sort = sortOrder.value;
+
+            filteredThreads = threads.filter(t => {
+                if (selectedPerson && !threadContainsPerson(t, selectedPerson)) return false;
+
+                if (searchTerm) {
+                    const matchSubject = (t.subject || '').toLowerCase().includes(searchTerm);
+                    const matchAuthor = (t.root_author || '').toLowerCase().includes(searchTerm);
+                    const matchParticipants = (t.participants || []).some(p => p.toLowerCase().includes(searchTerm));
+                    if (!matchSubject && !matchAuthor && !matchParticipants) return false;
+                }
+
+                if (year && String(t.year_start) !== year) return false;
+
+                return true;
+            });
+
+            filteredThreads.sort((a, b) => {
+                switch (sort) {
+                    case 'date-desc': return (b.date_start || '').localeCompare(a.date_start || '');
+                    case 'date-asc': return (a.date_start || '').localeCompare(b.date_start || '');
+                    case 'size-desc': return b.message_count - a.message_count;
+                    case 'size-asc': return a.message_count - b.message_count;
+                }
+            });
+
+            currentPage = 1;
+            renderThreadList();
+        }
+
+        // Render thread list
+        function renderThreadList() {
+            const totalPages = Math.ceil(filteredThreads.length / perPage);
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+            const pageThreads = filteredThreads.slice(start, end);
+
+            listInfo.textContent = `${filteredThreads.length.toLocaleString()} conversations`;
+            paginationInfo.textContent = `${start + 1}-${Math.min(end, filteredThreads.length)} of ${filteredThreads.length}`;
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage >= totalPages;
+
+            if (pageThreads.length === 0) {
+                threadListEl.innerHTML = '<li class="loading">No threads match your filters</li>';
+                return;
+            }
+
+            threadListEl.innerHTML = pageThreads.map(t => {
+                const date = t.date_start ? formatDate(t.date_start) : '';
+                const sender = t.root_author ? t.root_author.split('@')[0] : 'Unknown';
+                const notablePeople = t.participants
+                    .map(p => getPersonForEmail(p))
+                    .filter(p => p);
+                const uniqueNotable = [...new Set(notablePeople)];
+
+                return `
+                    <li class="thread-row" data-id="${t.id}">
+                        <div class="thread-sender">
+                            <span class="sender-name">${escapeHtml(sender)}</span>
+                            ${t.message_count > 1 ? `<span class="thread-count">${t.message_count}</span>` : ''}
+                        </div>
+                        <div class="thread-content">
+                            <span class="thread-subject">${escapeHtml(t.subject || '(No Subject)')}</span>
+                            <span class="thread-snippet"> - ${escapeHtml(getThreadSnippet(t))}</span>
+                        </div>
+                        <span class="thread-date">${date}</span>
+                    </li>
+                `;
+            }).join('');
+
+            threadListEl.querySelectorAll('.thread-row').forEach(el => {
+                el.addEventListener('click', () => showThread(el.dataset.id));
+            });
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            if (date.getFullYear() === now.getFullYear()) {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function getThreadSnippet(thread) {
+            const firstEmail = emails[thread.message_ids[0]];
+            if (firstEmail && firstEmail.body) {
+                return firstEmail.body.substring(0, 100).replace(/\s+/g, ' ');
+            }
+            return '';
+        }
+
+        // Show thread
+        function showThread(threadId) {
+            const thread = threads.find(t => t.id === threadId);
+            if (!thread) return;
+
+            threadListView.classList.add('hidden');
+            threadDetail.classList.add('active');
+
+            document.getElementById('detail-subject').textContent = thread.subject || '(No Subject)';
+
+            const dateRange = thread.date_start === thread.date_end
+                ? formatDate(thread.date_start)
+                : `${formatDate(thread.date_start)} - ${formatDate(thread.date_end)}`;
+
+            document.getElementById('detail-meta').textContent =
+                `${thread.message_count} message${thread.message_count !== 1 ? 's' : ''} · ${dateRange}`;
+
+            // Show expand/collapse buttons only for multi-message threads
+            detailActions.classList.toggle('visible', thread.message_count > 1);
+
+            const threadEmails = thread.message_ids
+                .map(id => emails[id])
+                .filter(e => e)
+                .sort((a, b) => (a.date_parsed || '').localeCompare(b.date_parsed || ''));
+
+            // If no emails loaded (All Mail view), show message
+            if (threadEmails.length === 0) {
+                detailActions.classList.remove('visible');
+                document.getElementById('email-list').innerHTML = `
+                    <div style="padding: 48px; text-align: center; color: #5f6368;">
+                        <p style="font-size: 16px; margin-bottom: 8px;">Email content not available in All Mail view</p>
+                        <p style="font-size: 13px;">Switch to Important to view full email content for notable cypherpunk threads.</p>
+                    </div>
+                `;
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            document.getElementById('email-list').innerHTML = threadEmails.map((e, idx) => {
+                const notablePerson = getPersonForEmail(e.from_email);
+                const isNotable = notablePerson !== null;
+                const color = getAvatarColor(e.from_name || e.from_email || '');
+                const initials = getInitials(e.from_name || e.from_email || '');
+                const date = e.date_parsed ? new Date(e.date_parsed).toLocaleString() : '';
+                const body = e.body || '(No content)';
+                const isLong = body.length > 500;
+                const isCollapsed = idx > 0;
+                const snippet = body.substring(0, 100).replace(/\s+/g, ' ').trim();
+
+                return `
+                    <div class="email-card ${isNotable ? 'notable' : ''} ${isCollapsed ? 'collapsed' : ''}" data-email-id="${e.id}">
+                        <div class="email-card-header">
+                            <div class="email-avatar" style="background: ${color}">${initials}</div>
+                            <div class="email-header-content">
+                                <div class="email-from">
+                                    <span class="sender-link" data-search="${escapeHtml(e.from_name || e.from_email || '')}">${escapeHtml(e.from_name || e.from_email || 'Unknown')}</span>
+                                    ${e.from_email ? `<span class="email-address" data-email="${escapeHtml(e.from_email)}">&lt;${escapeHtml(e.from_email)}&gt;</span>` : ''}
+                                </div>
+                                <span class="email-snippet"> - ${escapeHtml(snippet)}${body.length > 100 ? '...' : ''}</span>
+                                <div class="email-to">to cypherpunks@toad.com</div>
+                            </div>
+                            <div class="email-date">${date}</div>
+                        </div>
+                        <div class="email-body" id="body-${e.id}">${escapeHtml(body)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add click handlers for email addresses and sender names
+            document.querySelectorAll('.email-address').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    filterByEmail(el.dataset.email);
+                });
+            });
+
+            document.querySelectorAll('.sender-link').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (el.dataset.search) {
+                        filterByEmail(el.dataset.search);
+                    }
+                });
+            });
+
+            // Add click handlers for collapsing/expanding email cards
+            document.querySelectorAll('.email-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't toggle if clicking on links or buttons
+                    if (e.target.closest('.sender-link, .email-address, .expand-btn')) return;
+
+                    if (card.classList.contains('collapsed')) {
+                        card.classList.remove('collapsed');
+                    } else {
+                        // Allow collapsing any card except during text selection
+                        if (window.getSelection().toString()) return;
+                        card.classList.add('collapsed');
+                    }
+                });
+            });
+
+            window.scrollTo(0, 0);
+        }
+
+        // Filter by email address
+        function filterByEmail(emailAddr) {
+            searchInput.value = emailAddr;
+
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
+            activeFilterText.textContent = `Emails from ${emailAddr}`;
+            activeFilter.classList.add('visible');
+
+            applyFilters();
+        }
+
+        window.toggleBody = function(id) {
+            const body = document.getElementById('body-' + id);
+            const btn = body.nextElementSibling;
+            if (body.classList.contains('collapsed')) {
+                body.classList.remove('collapsed');
+                btn.textContent = 'Show less';
+            } else {
+                body.classList.add('collapsed');
+                btn.textContent = 'Show more';
+            }
+        };
+
+        // Back button
+        backBtn.addEventListener('click', () => {
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+        });
+
+        // Expand/Collapse all buttons
+        expandAllBtn.addEventListener('click', () => {
+            document.querySelectorAll('.email-card.collapsed').forEach(card => {
+                card.classList.remove('collapsed');
+            });
+        });
+
+        collapseAllBtn.addEventListener('click', () => {
+            document.querySelectorAll('.email-card').forEach((card, idx) => {
+                if (idx > 0) {
+                    card.classList.add('collapsed');
+                }
+            });
+        });
+
+        // Pagination
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderThreadList();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredThreads.length / perPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderThreadList();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        // Filter handlers
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(applyFilters, 300);
+        });
+
+        yearFilter.addEventListener('change', applyFilters);
+        sortOrder.addEventListener('change', applyFilters);
+
+        // Navigation handlers for Important/All Mail
+        navImportant.addEventListener('click', () => switchView('important'));
+        navAll.addEventListener('click', () => switchView('all'));
+
+        function switchView(view) {
+            const sameView = view === currentView;
+            currentView = view;
+
+            // If same view but person is selected, search is active, or detail view is open, handle it
+            const detailOpen = threadDetail.classList.contains('active');
+            if (sameView && !selectedPerson && !searchInput.value && !detailOpen) return;
+
+            // Update nav styling
+            navImportant.classList.toggle('active', view === 'important');
+            navAll.classList.toggle('active', view === 'all');
+
+            // Clear person filter and search
+            selectedPerson = null;
+            searchInput.value = '';
+            personListEl.querySelectorAll('.person-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            activeFilter.classList.remove('visible');
+
+            // Close detail view if open
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
+            // Switch threads
+            if (view === 'important') {
+                threads = starredThreads;
+                applyFilters();
+            } else {
+                if (allThreads.length === 0) {
+                    threadListEl.innerHTML = '<li class="loading">Loading all mail...</li>';
+                    loadAllMail().then((success) => {
+                        if (success) {
+                            threads = allThreads;
+                            applyFilters();
+                        } else {
+                            threadListEl.innerHTML = '<li class="loading" style="color: #d93025;">Failed to load all mail</li>';
+                        }
+                    });
+                    return;
+                }
+                threads = allThreads;
+                applyFilters();
+            }
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (threadDetail.classList.contains('active') && e.key === 'Escape') {
+                backBtn.click();
+            }
+        });
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
