@@ -1135,9 +1135,6 @@
 
                 emails = {};
 
-                // Load all email chunks in parallel (they're now split by year)
-                await loadAllEmails();
-
                 // Build starred threads list (this becomes Important)
                 const starredThreadIds = new Set(starredData.thread_ids || []);
                 starredThreads = notableThreads.filter(t => starredThreadIds.has(t.id));
@@ -1155,6 +1152,9 @@
 
                 renderPersonList();
                 applyFilters();
+
+                // Load emails in background (don't block initial render)
+                loadAllEmails();
 
                 // Load all threads in background for All Mail view
                 loadAllMail();
@@ -1424,7 +1424,15 @@
         }
 
         // Show thread
-        function showThread(threadId) {
+        // Track if emails are fully loaded
+        let emailsLoaded = false;
+        const originalLoadAllEmails = loadAllEmails;
+        loadAllEmails = async function() {
+            await originalLoadAllEmails();
+            emailsLoaded = true;
+        };
+
+        async function showThread(threadId) {
             const thread = threads.find(t => t.id === threadId);
             if (!thread) return;
 
@@ -1443,10 +1451,37 @@
             // Show expand/collapse buttons only for multi-message threads
             detailActions.classList.toggle('visible', thread.message_count > 1);
 
-            const threadEmails = thread.message_ids
+            // Check if emails are loaded, if not show loading and wait
+            let threadEmails = thread.message_ids
                 .map(id => emails[id])
-                .filter(e => e)
-                .sort((a, b) => (a.date_parsed || '').localeCompare(b.date_parsed || ''));
+                .filter(e => e);
+
+            if (threadEmails.length === 0 && !emailsLoaded && currentView !== 'all') {
+                // Show loading indicator while emails load
+                document.getElementById('email-list').innerHTML = `
+                    <div style="padding: 48px; text-align: center; color: #5f6368;">
+                        <p style="font-size: 14px;">Loading email content...</p>
+                    </div>
+                `;
+                window.scrollTo(0, 0);
+
+                // Wait for emails to load then re-render
+                await new Promise(resolve => {
+                    const checkLoaded = setInterval(() => {
+                        const loaded = thread.message_ids.some(id => emails[id]);
+                        if (loaded || emailsLoaded) {
+                            clearInterval(checkLoaded);
+                            resolve();
+                        }
+                    }, 100);
+                });
+
+                threadEmails = thread.message_ids
+                    .map(id => emails[id])
+                    .filter(e => e);
+            }
+
+            threadEmails.sort((a, b) => (a.date_parsed || '').localeCompare(b.date_parsed || ''));
 
             // If no emails loaded (All Mail view), show message
             if (threadEmails.length === 0) {
