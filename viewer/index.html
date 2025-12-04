@@ -166,20 +166,20 @@
         }
 
         .info-btn {
-            min-width: 16px;
-            width: 16px;
-            height: 16px;
+            min-width: 18px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: #9aa0a6;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            font-style: italic;
-            font-family: Georgia, serif;
+            background: transparent;
+            border: 1px solid #dadce0;
+            color: #5f6368;
+            font-size: 10px;
+            font-weight: normal;
+            font-style: normal;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: help;
+            cursor: pointer;
             margin-left: -8px;
             position: relative;
             flex-shrink: 0;
@@ -187,7 +187,9 @@
         }
 
         .info-btn:hover {
-            background: #202124;
+            background: #fff;
+            border-color: #1a73e8;
+            color: #1a73e8;
         }
 
         .info-tooltip {
@@ -195,16 +197,24 @@
             position: absolute;
             left: 24px;
             top: -8px;
-            background: #202124;
-            color: white;
-            padding: 10px 12px;
+            background: #fff;
+            color: #3c4043;
+            padding: 12px 16px;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: normal;
+            font-style: normal;
             line-height: 1.5;
-            width: 240px;
+            width: 280px;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #dadce0;
+        }
+
+        .info-tooltip-title {
+            color: #1a73e8;
+            font-weight: 500;
+            margin-bottom: 4px;
         }
 
         .info-btn:hover .info-tooltip {
@@ -902,7 +912,7 @@
                 <div class="nav-item active" id="nav-important" data-view="important">
                     <span class="nav-icon">⭐</span>
                     <span>Important</span>
-                    <span class="info-btn">i<span class="info-tooltip">A curated selection of the most influential cypherpunk emails. A great starting point for first-time visitors.</span></span>
+                    <span class="info-btn">i<span class="info-tooltip"><div class="info-tooltip-title">Important</div>A curated selection of the most influential cypherpunk emails. A great starting point for first-time visitors.</span></span>
                     <span class="nav-count" id="important-count">-</span>
                 </div>
                 <div class="nav-item" id="nav-all" data-view="all">
