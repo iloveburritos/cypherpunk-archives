@@ -885,13 +885,6 @@
                         <option value="1998">1998</option>
                         <option value="1999">1999</option>
                     </select>
-                    <select class="filter-select" id="size-filter">
-                        <option value="">All Sizes</option>
-                        <option value="1">Single message</option>
-                        <option value="2-5">2-5 messages</option>
-                        <option value="6-25">6-25 messages</option>
-                        <option value="26+">26+ messages</option>
-                    </select>
                     <select class="filter-select" id="sort-order">
                         <option value="date-asc">Oldest First</option>
                         <option value="date-desc">Newest First</option>
@@ -941,15 +934,17 @@
         // State
         let notableThreads = [];
         let allThreads = [];
+        let starredThreads = [];
         let threads = [];
         let emails = {};
         let allEmails = {};
         let notableAuthors = {};
         let notableStats = {};
+        let starredData = {};
         let filteredThreads = [];
         let currentPage = 1;
         let selectedPerson = null;
-        let currentView = 'important'; // 'important' or 'all'
+        let currentView = 'important'; // 'important', 'all', or 'starred'
         const perPage = 50;
 
         // Build reverse lookup: email -> person name
@@ -1022,7 +1017,6 @@
         const threadDetail = document.getElementById('thread-detail');
         const searchInput = document.getElementById('search-input');
         const yearFilter = document.getElementById('year-filter');
-        const sizeFilter = document.getElementById('size-filter');
         const sortOrder = document.getElementById('sort-order');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
@@ -1045,20 +1039,26 @@
         async function loadData() {
             try {
                 // First load notable data (for Important view)
-                const [authorsResp, statsResp, notableThreadsResp, notableEmailsResp] = await Promise.all([
+                const [authorsResp, statsResp, notableThreadsResp, notableEmailsResp, starredResp] = await Promise.all([
                     fetch('../notable/notable_authors.json'),
                     fetch('../notable/stats.json'),
                     fetch('../notable/threads.json'),
-                    fetch('../notable/emails.json')
+                    fetch('../notable/emails.json'),
+                    fetch('../notable/notable_emails_curated.json')
                 ]);
 
                 notableAuthors = await authorsResp.json();
                 notableStats = await statsResp.json();
                 notableThreads = await notableThreadsResp.json();
                 const notableEmailsArr = await notableEmailsResp.json();
+                starredData = await starredResp.json();
 
                 emails = {};
                 notableEmailsArr.forEach(e => emails[e.id] = e);
+
+                // Build starred threads list (this becomes Important)
+                const starredThreadIds = new Set(starredData.thread_ids || []);
+                starredThreads = notableThreads.filter(t => starredThreadIds.has(t.id));
 
                 // Build email to person lookup
                 for (const [person, emailList] of Object.entries(notableAuthors)) {
@@ -1067,9 +1067,9 @@
                     }
                 }
 
-                // Set initial state to Important view
-                threads = notableThreads;
-                importantCount.textContent = notableThreads.length.toLocaleString();
+                // Set initial state to Important view (using starred threads)
+                threads = starredThreads;
+                importantCount.textContent = starredThreads.length.toLocaleString();
 
                 renderPersonList();
                 applyFilters();
@@ -1238,7 +1238,6 @@
         function applyFilters() {
             const searchTerm = searchInput.value.toLowerCase();
             const year = yearFilter.value;
-            const size = sizeFilter.value;
             const sort = sortOrder.value;
 
             filteredThreads = threads.filter(t => {
@@ -1252,14 +1251,6 @@
                 }
 
                 if (year && String(t.year_start) !== year) return false;
-
-                if (size) {
-                    const count = t.message_count;
-                    if (size === '1' && count !== 1) return false;
-                    if (size === '2-5' && (count < 2 || count > 5)) return false;
-                    if (size === '6-25' && (count < 6 || count > 25)) return false;
-                    if (size === '26+' && count < 26) return false;
-                }
 
                 return true;
             });
@@ -1516,7 +1507,6 @@
         });
 
         yearFilter.addEventListener('change', applyFilters);
-        sizeFilter.addEventListener('change', applyFilters);
         sortOrder.addEventListener('change', applyFilters);
 
         // Navigation handlers for Important/All Mail
@@ -1549,7 +1539,7 @@
 
             // Switch threads
             if (view === 'important') {
-                threads = notableThreads;
+                threads = starredThreads;
                 applyFilters();
             } else {
                 if (allThreads.length === 0) {
