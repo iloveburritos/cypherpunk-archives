@@ -800,10 +800,10 @@
             font-size: 14px;
             line-height: 1.6;
             color: #202124;
-            white-space: pre-wrap;
             font-family: 'Roboto', sans-serif;
             max-height: 400px;
             overflow-y: auto;
+            word-wrap: break-word;
         }
 
         .email-body.collapsed {
@@ -2098,7 +2098,7 @@
                             </div>
                             <div class="email-date">${date}</div>
                         </div>
-                        <div class="email-body" id="body-${e.id}">${escapeHtml(body)}</div>
+                        <div class="email-body" id="body-${e.id}">${formatEmailBody(body)}</div>
                     </div>
                 `;
             }).join('');
@@ -2312,6 +2312,21 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Format email body: remove hard line wraps but keep paragraph breaks
+        function formatEmailBody(text) {
+            if (!text) return '';
+            // First escape HTML
+            const escaped = escapeHtml(text);
+            // Replace double+ newlines with a placeholder
+            const withPlaceholder = escaped.replace(/\n\s*\n/g, '{{PARA}}');
+            // Replace single newlines with spaces
+            const noHardWraps = withPlaceholder.replace(/\n/g, ' ');
+            // Replace multiple spaces with single space
+            const cleanSpaces = noHardWraps.replace(/  +/g, ' ');
+            // Restore paragraph breaks as <br><br>
+            return cleanSpaces.replace(/\{\{PARA\}\}/g, '<br><br>');
         }
 
         // Keyboard navigation
