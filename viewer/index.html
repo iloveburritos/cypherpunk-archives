@@ -277,7 +277,7 @@
             color: #001d35;
         }
 
-        .info-btn {
+        .person-info-btn {
             width: 18px;
             height: 18px;
             border-radius: 50%;
@@ -293,11 +293,11 @@
             transition: opacity 0.1s;
         }
 
-        .person-item:hover .info-btn {
+        .person-item:hover .person-info-btn {
             opacity: 1;
         }
 
-        .info-btn:hover {
+        .person-info-btn:hover {
             background: #fff;
             border-color: #1a73e8;
             color: #1a73e8;
@@ -1163,7 +1163,7 @@
                             </svg>
                         </div>
                         <span class="person-name">${escapeHtml(name)}</span>
-                        ${personBios[name] ? `<button class="info-btn" data-person="${escapeHtml(name)}">i</button>` : ''}
+                        ${personBios[name] ? `<button class="person-info-btn" data-person="${escapeHtml(name)}">i</button>` : ''}
                         <span class="person-count">${postCount.toLocaleString()}</span>
                     </li>
                 `;
@@ -1176,7 +1176,7 @@
                 });
             });
 
-            personListEl.querySelectorAll('.info-btn').forEach(btn => {
+            personListEl.querySelectorAll('.person-info-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     showBioTooltip(btn.dataset.person, e);
