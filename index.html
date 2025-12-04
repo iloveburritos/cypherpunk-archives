@@ -1004,6 +1004,18 @@
             }
         }
 
+        /* Highlight animation for recommended thread */
+        @keyframes highlight-pulse {
+            0% { background: #fff; }
+            50% { background: #e8f0fe; }
+            100% { background: #fff; }
+        }
+
+        .thread-row.highlighted {
+            animation: highlight-pulse 1.5s ease-in-out 3;
+            box-shadow: inset 3px 0 0 #1a73e8;
+        }
+
         /* Mobile menu toggle button */
         .mobile-menu-btn {
             display: none;
@@ -2383,9 +2395,29 @@
             }
         }
 
+        function highlightStatementOfPurpose() {
+            // Find "A statement of purpose" thread and highlight it
+            setTimeout(() => {
+                const threadRows = document.querySelectorAll('.thread-row');
+                for (const row of threadRows) {
+                    const subject = row.querySelector('.thread-subject');
+                    if (subject && subject.textContent.toLowerCase().includes('statement of purpose')) {
+                        row.classList.add('highlighted');
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Remove highlight class after animation completes
+                        setTimeout(() => {
+                            row.classList.remove('highlighted');
+                        }, 4500); // 3 pulses × 1.5s each
+                        break;
+                    }
+                }
+            }, 300); // Small delay to ensure thread list is rendered
+        }
+
         function hideWelcomePopup() {
             welcomeOverlay.classList.remove('visible');
             localStorage.setItem('cypherpunk-welcome-seen', 'true');
+            highlightStatementOfPurpose();
         }
 
         welcomeBtn.addEventListener('click', hideWelcomePopup);
