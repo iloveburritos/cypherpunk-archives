@@ -1144,24 +1144,41 @@
         const threadNavInfo = document.getElementById('thread-nav-info');
 
         // Load data
-        // Track which year chunks have been loaded
-        const loadedYears = new Set();
+        // Track which year chunks have been loaded (for notable emails)
+        const loadedNotableYears = new Set();
+        const loadedAllMailYears = new Set();
         const emailYears = [1992, 1993, 1994, 1995, 1996, 1997, 1998];
 
-        async function loadEmailsForYear(year) {
-            if (loadedYears.has(year)) return;
+        async function loadNotableEmailsForYear(year) {
+            if (loadedNotableYears.has(year)) return;
             try {
                 const resp = await fetch(`../notable/emails/emails_${year}.json`);
                 const yearEmails = await resp.json();
                 yearEmails.forEach(e => emails[e.id] = e);
-                loadedYears.add(year);
+                loadedNotableYears.add(year);
             } catch (err) {
-                console.warn(`Could not load emails for ${year}:`, err);
+                console.warn(`Could not load notable emails for ${year}:`, err);
             }
         }
 
-        async function loadAllEmails() {
-            await Promise.all(emailYears.map(loadEmailsForYear));
+        async function loadAllMailEmailsForYear(year) {
+            if (loadedAllMailYears.has(year)) return;
+            try {
+                const resp = await fetch(`../final/emails/emails_${year}.json`);
+                const yearEmails = await resp.json();
+                yearEmails.forEach(e => allEmails[e.id] = e);
+                loadedAllMailYears.add(year);
+            } catch (err) {
+                console.warn(`Could not load all mail emails for ${year}:`, err);
+            }
+        }
+
+        async function loadAllNotableEmails() {
+            await Promise.all(emailYears.map(loadNotableEmailsForYear));
+        }
+
+        async function loadAllMailEmails() {
+            await Promise.all(emailYears.map(loadAllMailEmailsForYear));
         }
 
         async function loadData() {
@@ -1200,7 +1217,7 @@
                 applyFilters();
 
                 // Load emails in background (don't block initial render)
-                loadAllEmails();
+                loadAllNotableEmails();
 
                 // Load all threads in background for All Mail view
                 loadAllMail();
@@ -1462,20 +1479,33 @@
         }
 
         function getThreadSnippet(thread) {
-            const firstEmail = emails[thread.message_ids[0]];
+            // Try both email stores
+            const firstEmail = emails[thread.message_ids[0]] || allEmails[thread.message_ids[0]];
             if (firstEmail && firstEmail.body) {
                 return firstEmail.body.substring(0, 100).replace(/\s+/g, ' ');
             }
             return '';
         }
 
+        // Show thread
         // Track if emails are fully loaded
-        let emailsLoaded = false;
-        const originalLoadAllEmails = loadAllEmails;
-        loadAllEmails = async function() {
-            await originalLoadAllEmails();
-            emailsLoaded = true;
+        let notableEmailsLoaded = false;
+        let allMailEmailsLoaded = false;
+
+        const originalLoadAllNotableEmails = loadAllNotableEmails;
+        loadAllNotableEmails = async function() {
+            await originalLoadAllNotableEmails();
+            notableEmailsLoaded = true;
         };
+
+        const originalLoadAllMailEmails = loadAllMailEmails;
+        loadAllMailEmails = async function() {
+            await originalLoadAllMailEmails();
+            allMailEmailsLoaded = true;
+        };
+
+        // Alias for backward compatibility
+        const loadAllEmails = loadAllNotableEmails;
 
         async function showThread(threadId) {
             const thread = threads.find(t => t.id === threadId);
@@ -1500,12 +1530,18 @@
             // Show expand/collapse buttons only for multi-message threads
             detailActions.classList.toggle('visible', thread.message_count > 1);
 
+            // Determine which email store to use based on current view
+            const isAllMailView = currentView === 'all';
+            const emailStore = isAllMailView ? allEmails : emails;
+            const emailsLoaded = isAllMailView ? allMailEmailsLoaded : notableEmailsLoaded;
+            const loadEmailsFn = isAllMailView ? loadAllMailEmails : loadAllNotableEmails;
+
             // Check if emails are loaded, if not show loading and wait
             let threadEmails = thread.message_ids
-                .map(id => emails[id])
+                .map(id => emailStore[id])
                 .filter(e => e);
 
-            if (threadEmails.length === 0 && !emailsLoaded && currentView !== 'all') {
+            if (threadEmails.length === 0 && !emailsLoaded) {
                 // Show loading indicator while emails load
                 document.getElementById('email-list').innerHTML = `
                     <div style="padding: 48px; text-align: center; color: #5f6368;">
@@ -1514,11 +1550,15 @@
                 `;
                 window.scrollTo(0, 0);
 
+                // Start loading emails if not already loading
+                loadEmailsFn();
+
                 // Wait for emails to load then re-render
                 await new Promise(resolve => {
                     const checkLoaded = setInterval(() => {
-                        const loaded = thread.message_ids.some(id => emails[id]);
-                        if (loaded || emailsLoaded) {
+                        const loaded = thread.message_ids.some(id => emailStore[id]);
+                        const fullyLoaded = isAllMailView ? allMailEmailsLoaded : notableEmailsLoaded;
+                        if (loaded || fullyLoaded) {
                             clearInterval(checkLoaded);
                             resolve();
                         }
@@ -1526,19 +1566,19 @@
                 });
 
                 threadEmails = thread.message_ids
-                    .map(id => emails[id])
+                    .map(id => emailStore[id])
                     .filter(e => e);
             }
 
             threadEmails.sort((a, b) => (a.date_parsed || '').localeCompare(b.date_parsed || ''));
 
-            // If no emails loaded (All Mail view), show message
+            // If no emails loaded, show message
             if (threadEmails.length === 0) {
                 detailActions.classList.remove('visible');
                 document.getElementById('email-list').innerHTML = `
                     <div style="padding: 48px; text-align: center; color: #5f6368;">
-                        <p style="font-size: 16px; margin-bottom: 8px;">Email content not available in All Mail view</p>
-                        <p style="font-size: 13px;">Switch to Important to view full email content for notable cypherpunk threads.</p>
+                        <p style="font-size: 16px; margin-bottom: 8px;">Email content could not be loaded</p>
+                        <p style="font-size: 13px;">Try refreshing the page or check your internet connection.</p>
                     </div>
                 `;
                 window.scrollTo(0, 0);
