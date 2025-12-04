@@ -165,6 +165,48 @@
             color: #001d35;
         }
 
+        .info-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #9aa0a6;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            margin-left: 4px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .info-btn:hover {
+            background: #5f6368;
+        }
+
+        .info-tooltip {
+            display: none;
+            position: absolute;
+            left: 24px;
+            top: -8px;
+            background: #202124;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: normal;
+            line-height: 1.5;
+            width: 240px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .info-btn:hover .info-tooltip {
+            display: block;
+        }
+
         .labels-divider {
             height: 1px;
             background: #e0e0e0;
@@ -856,6 +898,7 @@
                 <div class="nav-item active" id="nav-important" data-view="important">
                     <span class="nav-icon">⭐</span>
                     <span>Important</span>
+                    <span class="info-btn">?<span class="info-tooltip">A curated selection of the most influential cypherpunk emails. A great starting point for first-time visitors.</span></span>
                     <span class="nav-count" id="important-count">-</span>
                 </div>
                 <div class="nav-item" id="nav-all" data-view="all">
