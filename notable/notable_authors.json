@@ -1,3 +1,190 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0bb99f980fde8de652702f5e4739c4f546f175b806ad1d69f11c382ffec7e47b
-size 4121
+{
+  "Adam Back": [
+    "aba@dcs.ex.ac.uk",
+    "a.back@exeter.ac.uk",
+    "aba@exe.ex.ac.uk",
+    "aba@atlas.ex.ac.uk"
+  ],
+  "Bram Cohen": [
+    "bram@gawth.com"
+  ],
+  "Bruce Schneier": [
+    "schneier@counterpane.com"
+  ],
+  "Eric Hughes": [
+    "hughes@ah.com",
+    "hughes@soda.berkeley.edu",
+    "eric@remailer.net",
+    "eric@sac.net",
+    "hugh0015@algonquinc.on.ca",
+    "hughes@csua.berkeley.edu",
+    "hughes@huge.cum",
+    "hughes@toad.com"
+  ],
+  "Hal Finney": [
+    "hfinney@shell.portal.com",
+    "hal@rain.org",
+    "hal@alumni.cco.caltech.edu",
+    "ghsvax!hal@uunet.uu.net"
+  ],
+  "Ian Grigg": [
+    "iang@systemics.com"
+  ],
+  "Jim Bell": [
+    "jimbell@pacifier.com"
+  ],
+  "John Gilmore": [
+    "gnu@toad.com",
+    "gnu@cygnus.com",
+    "gnu@eff.org",
+    "gnu@om.toad.com",
+    "owner-cypherpunks@toad.com"
+  ],
+  "John Perry Barlow": [
+    "barlow@eff.org"
+  ],
+  "Julian Assange": [
+    "proff@suburbia.net",
+    "proff@iq.org",
+    "proff@.suburbia.net"
+  ],
+  "Martin Hellman": [
+    "hellman@isl.stanford.edu"
+  ],
+  "Matt Blaze": [
+    "mab@crypto.com",
+    "mab@research.att.com",
+    "mab@nsa.tempo.att.com"
+  ],
+  "Mitch Kapor": [
+    "mkapor@kei.com"
+  ],
+  "Nick Szabo": [
+    "szabo@netcom.com",
+    "szabo@techbook.com"
+  ],
+  "Perry E. Metzger": [
+    "perry@piermont.com",
+    "perry@imsi.com",
+    "pmetzger@lehman.com",
+    "perry@snark.imsi.com",
+    "pmetzger@shearson.com",
+    "perry@panix.com",
+    "perry@bacon.imsi.com",
+    "pmetzger@snark.shearson.com"
+  ],
+  "Philip Zimmermann": [
+    "prz@acm.org",
+    "prz@columbine.cgd.ucar.edu",
+    "prz@pgp.com",
+    "prz@sage.cgd.ucar.edu"
+  ],
+  "Ryan Lackey": [
+    "rdl@mit.edu",
+    "ryan@systemics.ai",
+    "ryan@netaxs.com",
+    "ryan@arianrhod.systemics.ai",
+    "ryan@pobox.com",
+    "ryan@venona.com"
+  ],
+  "Timothy C. May": [
+    "tcmay@got.net",
+    "tcmay@netcom.com",
+    "tcmay@sensemedia.net",
+    "tcmay@localhost.netcom.com"
+  ],
+  "Wei Dai": [
+    "weidai@eskimo.com"
+  ],
+  "Whitfield Diffie": [
+    "whitfield.diffie@eng.sun.com"
+  ],
+  "Bryce 'Zooko' Wilcox": [
+    "zooko@xs4all.nl",
+    "wilcoxb@nagina.cs.colorado.edu",
+    "bryce@digicash.com",
+    "wilcoxb@nag.cs.colorado.edu",
+    "wilcoxb@taussky.cs.colorado.edu",
+    "wilcoxb@nagtje.cs.colorado.edu",
+    "wilcoxb@land.cs.colorado.edu",
+    "zooko@wildgoose.dagny",
+    "zooko@wildgoose.tandu.com"
+  ],
+  "Duncan Frissell": [
+    "frissell@panix.com"
+  ],
+  "Marc Andreessen": [
+    "marca@mcom.com",
+    "marca@neon.mcom.com"
+  ],
+  "Black Unicorn": [
+    "unicorn@schloss.li",
+    "unicorn@access.digex.net",
+    "unicorn@polaris.mindport.net",
+    "unicorn@access3.digex.net",
+    "unicorn@xanadu.mindport.net"
+  ],
+  "James A. Donald": [
+    "jamesd@echeque.com",
+    "jamesd@netcom.com",
+    "jamesd@com.informix.com",
+    "jamesd@informix.com",
+    "jamesdon@infoserv.com"
+  ],
+  "Rishab Aiyer Ghosh": [
+    "rishab@dxm.ernet.in",
+    "rishab@best.com",
+    "rishab@dxm.org",
+    "rishab@m-net.arbornet.org"
+  ],
+  "Lucky Green": [
+    "shamrock@netcom.com",
+    "shamrock@cypherpunks.to"
+  ],
+  "Eric Blossom": [
+    "eb@comsec.com",
+    "eb@srlr14.sr.hp.com",
+    "eb@sr.hp.com",
+    "eb@well.sf.ca.us",
+    "eb@mwmax.sr.hp.com"
+  ],
+  "Vipul Ved Prakash": [
+    "vipul@pobox.com",
+    "vipul@best.com",
+    "mail@vipul.net"
+  ],
+  "Lance Cottrell": [
+    "loki@infonex.com",
+    "lcottrell@popmail.ucsd.edu",
+    "loki@obscura.com",
+    "loki@nately.ucsd.edu",
+    "loki@convex1.tcs.tulane.edu",
+    "lcottrell@infonex.com",
+    "lcottrell@anonymizer.com"
+  ],
+  "Johan Helsingius": [
+    "julf@penet.fi",
+    "julf@util.eunet.fi"
+  ],
+  "Phil Karn": [
+    "karn@qualcomm.com",
+    "karn@unix.ka9q.ampr.org",
+    "karn@homer.ka9q.ampr.org"
+  ],
+  "Carl Ellison": [
+    "cme@tis.com",
+    "cme@ellisun.sw.stratus.com",
+    "cme@sw.stratus.com",
+    "cme@cybercash.com",
+    "cme@acm.org",
+    "cme@clark.net",
+    "carl_ellison@vos.stratus.com",
+    "cme@world.std.com"
+  ],
+  "Ian Goldberg": [
+    "iang@cs.berkeley.edu",
+    "iagoldbe@csclub.uwaterloo.ca",
+    "iagoldbe@calum.csclub.uwaterloo.ca",
+    "iang@cory.eecs.berkeley.edu"
+  ]
+}
