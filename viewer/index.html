@@ -1231,6 +1231,9 @@
             navImportant.classList.remove('active');
             navAll.classList.remove('active');
 
+            // Use all notable threads when filtering by person (not just current view)
+            threads = notableThreads;
+
             activeFilterText.textContent = `Showing threads with ${personName}`;
             activeFilter.classList.add('visible');
 
