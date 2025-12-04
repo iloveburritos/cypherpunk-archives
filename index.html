@@ -1578,9 +1578,10 @@
             navImportant.classList.toggle('active', view === 'important');
             navAll.classList.toggle('active', view === 'all');
 
-            // Clear person filter and search
+            // Clear person filter, search, and year filter
             selectedPerson = null;
             searchInput.value = '';
+            yearFilter.value = '';
             personListEl.querySelectorAll('.person-item').forEach(el => {
                 el.classList.remove('active');
             });
