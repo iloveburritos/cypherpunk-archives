@@ -612,6 +612,43 @@
             border-color: #5f6368;
         }
 
+        .thread-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 16px;
+        }
+
+        .thread-nav-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: #5f6368;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .thread-nav-btn:hover:not(:disabled) {
+            background: #f1f3f4;
+        }
+
+        .thread-nav-btn:disabled {
+            color: #dadce0;
+            cursor: default;
+        }
+
+        .thread-nav-info {
+            font-size: 12px;
+            color: #5f6368;
+            min-width: 60px;
+            text-align: center;
+        }
+
         /* Email messages */
         .email-list {
             padding: 0 24px 24px;
@@ -981,6 +1018,11 @@
                         <button class="detail-action-btn" id="expand-all-btn">Expand all</button>
                         <button class="detail-action-btn" id="collapse-all-btn">Collapse all</button>
                     </div>
+                    <div class="thread-nav">
+                        <button class="thread-nav-btn" id="prev-thread-btn" title="Previous thread (k)">&#8249;</button>
+                        <span class="thread-nav-info" id="thread-nav-info"></span>
+                        <button class="thread-nav-btn" id="next-thread-btn" title="Next thread (j)">&#8250;</button>
+                    </div>
                 </div>
                 <div class="email-list" id="email-list"></div>
             </div>
@@ -1007,6 +1049,7 @@
         let currentPage = 1;
         let selectedPerson = null;
         let currentView = 'important'; // 'important', 'all', or 'starred'
+        let currentThreadIndex = -1; // Track current thread position in filteredThreads
         const perPage = 50;
 
         // Build reverse lookup: email -> person name
@@ -1096,6 +1139,9 @@
         const detailActions = document.getElementById('detail-actions');
         const expandAllBtn = document.getElementById('expand-all-btn');
         const collapseAllBtn = document.getElementById('collapse-all-btn');
+        const prevThreadBtn = document.getElementById('prev-thread-btn');
+        const nextThreadBtn = document.getElementById('next-thread-btn');
+        const threadNavInfo = document.getElementById('thread-nav-info');
 
         // Load data
         // Track which year chunks have been loaded
@@ -1436,6 +1482,10 @@
             const thread = threads.find(t => t.id === threadId);
             if (!thread) return;
 
+            // Track current position in filteredThreads for prev/next navigation
+            currentThreadIndex = filteredThreads.findIndex(t => t.id === threadId);
+            updateThreadNav();
+
             threadListView.classList.add('hidden');
             threadDetail.classList.add('active');
 
@@ -1606,6 +1656,49 @@
                     card.classList.add('collapsed');
                 }
             });
+        });
+
+        // Thread navigation (prev/next)
+        function updateThreadNav() {
+            const total = filteredThreads.length;
+            const current = currentThreadIndex + 1;
+            threadNavInfo.textContent = `${current} of ${total}`;
+            prevThreadBtn.disabled = currentThreadIndex <= 0;
+            nextThreadBtn.disabled = currentThreadIndex >= total - 1;
+        }
+
+        function goToPrevThread() {
+            if (currentThreadIndex > 0) {
+                const prevThread = filteredThreads[currentThreadIndex - 1];
+                showThread(prevThread.id);
+            }
+        }
+
+        function goToNextThread() {
+            if (currentThreadIndex < filteredThreads.length - 1) {
+                const nextThread = filteredThreads[currentThreadIndex + 1];
+                showThread(nextThread.id);
+            }
+        }
+
+        prevThreadBtn.addEventListener('click', goToPrevThread);
+        nextThreadBtn.addEventListener('click', goToNextThread);
+
+        // Keyboard shortcuts for thread navigation
+        document.addEventListener('keydown', (e) => {
+            // Only handle if thread detail is visible
+            if (!threadDetail.classList.contains('active')) return;
+            // Don't handle if user is typing in an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.key === 'j' || e.key === 'ArrowRight') {
+                goToNextThread();
+            } else if (e.key === 'k' || e.key === 'ArrowLeft') {
+                goToPrevThread();
+            } else if (e.key === 'Escape' || e.key === 'u') {
+                threadDetail.classList.remove('active');
+                threadListView.classList.remove('hidden');
+            }
         });
 
         // Pagination
