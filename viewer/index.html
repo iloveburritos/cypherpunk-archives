@@ -192,12 +192,12 @@
         .person-item {
             display: flex;
             align-items: center;
-            padding: 4px 24px 4px 12px;
-            margin: 0 8px;
+            padding: 8px 16px 8px 16px;
+            margin: 1px 8px;
             border-radius: 0 16px 16px 0;
             cursor: pointer;
             transition: background 0.1s;
-            gap: 10px;
+            gap: 12px;
         }
 
         .person-item:hover {
@@ -209,25 +209,25 @@
             color: #001d35;
         }
 
-        .person-info {
-            flex: 1;
-            min-width: 0;
-        }
-
         .person-name {
             font-size: 14px;
             font-weight: 400;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
+            line-height: 1;
         }
 
-        .person-stats {
-            font-size: 11px;
+        .person-count {
+            font-size: 14px;
             color: #5f6368;
+            flex-shrink: 0;
+            line-height: 1;
         }
 
-        .person-item.active .person-stats {
+        .person-item.active .person-count {
             color: #001d35;
         }
 
@@ -270,8 +270,17 @@
         }
 
         .label-icon {
-            color: #5f6368;
-            font-size: 14px;
+            width: 20px;
+            height: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .label-icon svg {
+            width: 20px;
+            height: 14px;
+            display: block;
         }
 
         /* Thread list */
@@ -374,58 +383,53 @@
 
         .thread-sender {
             width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #202124;
+            flex-shrink: 0;
+        }
+
+        .sender-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 14px;
-            color: #202124;
+        }
+
+        .thread-count {
+            font-size: 12px;
+            color: #5f6368;
             flex-shrink: 0;
         }
 
         .thread-content {
             flex: 1;
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
             min-width: 0;
-            padding: 0 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 32px;
         }
 
         .thread-subject {
             font-size: 14px;
+            font-weight: 500;
             color: #202124;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .thread-snippet {
-            color: #5f6368;
+            color: #9aa0a6;
             font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .thread-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
+            font-weight: 400;
         }
 
         .thread-date {
             font-size: 12px;
             color: #5f6368;
             white-space: nowrap;
-        }
-
-        .thread-count {
-            font-size: 11px;
-            color: #5f6368;
-            background: #f1f3f4;
-            padding: 2px 6px;
-            border-radius: 4px;
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
         .notable-badge {
@@ -526,6 +530,32 @@
             color: #5f6368;
         }
 
+        .detail-actions {
+            display: none;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .detail-actions.visible {
+            display: flex;
+        }
+
+        .detail-action-btn {
+            padding: 8px 16px;
+            border: 1px solid #dadce0;
+            background: #fff;
+            color: #5f6368;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.1s, border-color 0.1s;
+        }
+
+        .detail-action-btn:hover {
+            background: #f1f3f4;
+            border-color: #5f6368;
+        }
+
         /* Email messages */
         .email-list {
             padding: 0 24px 24px;
@@ -534,7 +564,7 @@
         .email-card {
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            margin-top: 16px;
+            margin-top: 8px;
             overflow: hidden;
         }
 
@@ -542,17 +572,67 @@
             border-color: #1a73e8;
         }
 
+        .email-card.collapsed {
+            cursor: pointer;
+        }
+
+        .email-card.collapsed:hover {
+            background: #f5f5f5;
+        }
+
+        .email-card.collapsed .email-body,
+        .email-card.collapsed .expand-btn,
+        .email-card.collapsed .email-to {
+            display: none;
+        }
+
         .email-card-header {
             display: flex;
             align-items: flex-start;
             padding: 16px;
             background: #f8f9fa;
-            cursor: pointer;
             gap: 12px;
+        }
+
+        .email-card.collapsed .email-card-header {
+            background: transparent;
+            padding: 12px 16px;
+            align-items: center;
         }
 
         .email-card.notable .email-card-header {
             background: #e8f0fe;
+        }
+
+        .email-card.collapsed.notable .email-card-header {
+            background: transparent;
+        }
+
+        .email-snippet {
+            display: none;
+            color: #5f6368;
+            font-size: 14px;
+            font-weight: 400;
+            margin-left: 4px;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-card.collapsed .email-snippet {
+            display: inline;
+        }
+
+        .email-card.collapsed .email-header-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .email-card.collapsed .email-from {
+            flex-shrink: 0;
         }
 
         .email-avatar {
@@ -578,9 +658,26 @@
             font-size: 14px;
             font-weight: 500;
             color: #202124;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        }
+
+        .sender-link {
+            cursor: pointer;
+        }
+
+        .sender-link:hover {
+            color: #1a73e8;
+        }
+
+        .email-address {
+            font-weight: 400;
+            color: #5f6368;
+            margin-left: 4px;
+            cursor: pointer;
+        }
+
+        .email-address:hover {
+            color: #1a73e8;
+            text-decoration: underline;
         }
 
         .email-from .notable-tag {
@@ -825,6 +922,10 @@
                         <h1 id="detail-subject"></h1>
                         <div class="detail-meta" id="detail-meta"></div>
                     </div>
+                    <div class="detail-actions" id="detail-actions">
+                        <button class="detail-action-btn" id="expand-all-btn">Expand all</button>
+                        <button class="detail-action-btn" id="collapse-all-btn">Collapse all</button>
+                    </div>
                 </div>
                 <div class="email-list" id="email-list"></div>
             </div>
@@ -936,6 +1037,9 @@
         const navAll = document.getElementById('nav-all');
         const importantCount = document.getElementById('important-count');
         const allCount = document.getElementById('all-count');
+        const detailActions = document.getElementById('detail-actions');
+        const expandAllBtn = document.getElementById('expand-all-btn');
+        const collapseAllBtn = document.getElementById('collapse-all-btn');
 
         // Load data
         async function loadData() {
@@ -1001,12 +1105,14 @@
                 const color = getAvatarColor(name);
                 return `
                     <li class="person-item" data-person="${escapeHtml(name)}">
-                        <span class="label-icon" style="color: ${color}">◆</span>
-                        <div class="person-info">
-                            <div class="person-name">${escapeHtml(name)}</div>
-                            <div class="person-stats">${postCount.toLocaleString()} msgs</div>
+                        <div class="label-icon">
+                            <svg viewBox="0 0 24 18" fill="${color}">
+                                <path d="M2 2 L2 16 Q2 17 3 17 L15 17 L22 9 L15 1 L3 1 Q2 1 2 2 Z"/>
+                            </svg>
                         </div>
+                        <span class="person-name">${escapeHtml(name)}</span>
                         ${personBios[name] ? `<button class="info-btn" data-person="${escapeHtml(name)}">i</button>` : ''}
+                        <span class="person-count">${postCount.toLocaleString()}</span>
                     </li>
                 `;
             }).join('');
@@ -1065,6 +1171,7 @@
         // Select person
         function selectPerson(personName) {
             selectedPerson = personName;
+            searchInput.value = '';
 
             personListEl.querySelectorAll('.person-item').forEach(el => {
                 el.classList.toggle('active', el.dataset.person === personName);
@@ -1087,6 +1194,7 @@
         // Clear filter
         function clearFilter() {
             selectedPerson = null;
+            searchInput.value = '';
             personListEl.querySelectorAll('.person-item').forEach(el => {
                 el.classList.remove('active');
             });
@@ -1197,15 +1305,15 @@
 
                 return `
                     <li class="thread-row" data-id="${t.id}">
-                        <div class="thread-sender">${escapeHtml(sender)}</div>
+                        <div class="thread-sender">
+                            <span class="sender-name">${escapeHtml(sender)}</span>
+                            ${t.message_count > 1 ? `<span class="thread-count">${t.message_count}</span>` : ''}
+                        </div>
                         <div class="thread-content">
                             <span class="thread-subject">${escapeHtml(t.subject || '(No Subject)')}</span>
                             <span class="thread-snippet"> - ${escapeHtml(getThreadSnippet(t))}</span>
                         </div>
-                        <div class="thread-meta">
-                            ${t.message_count > 1 ? `<span class="thread-count">${t.message_count}</span>` : ''}
-                            <span class="thread-date">${date}</span>
-                        </div>
+                        <span class="thread-date">${date}</span>
                     </li>
                 `;
             }).join('');
@@ -1249,6 +1357,9 @@
             document.getElementById('detail-meta').textContent =
                 `${thread.message_count} message${thread.message_count !== 1 ? 's' : ''} · ${dateRange}`;
 
+            // Show expand/collapse buttons only for multi-message threads
+            detailActions.classList.toggle('visible', thread.message_count > 1);
+
             const threadEmails = thread.message_ids
                 .map(id => emails[id])
                 .filter(e => e)
@@ -1256,6 +1367,7 @@
 
             // If no emails loaded (All Mail view), show message
             if (threadEmails.length === 0) {
+                detailActions.classList.remove('visible');
                 document.getElementById('email-list').innerHTML = `
                     <div style="padding: 48px; text-align: center; color: #5f6368;">
                         <p style="font-size: 16px; margin-bottom: 8px;">Email content not available in All Mail view</p>
@@ -1274,26 +1386,75 @@
                 const date = e.date_parsed ? new Date(e.date_parsed).toLocaleString() : '';
                 const body = e.body || '(No content)';
                 const isLong = body.length > 500;
+                const isCollapsed = idx > 0;
+                const snippet = body.substring(0, 100).replace(/\s+/g, ' ').trim();
 
                 return `
-                    <div class="email-card ${isNotable ? 'notable' : ''}">
+                    <div class="email-card ${isNotable ? 'notable' : ''} ${isCollapsed ? 'collapsed' : ''}" data-email-id="${e.id}">
                         <div class="email-card-header">
                             <div class="email-avatar" style="background: ${color}">${initials}</div>
                             <div class="email-header-content">
                                 <div class="email-from">
-                                    ${escapeHtml(e.from_name || e.from_email || 'Unknown')}
+                                    <span class="sender-link" data-search="${escapeHtml(e.from_name || e.from_email || '')}">${escapeHtml(e.from_name || e.from_email || 'Unknown')}</span>
+                                    ${e.from_email ? `<span class="email-address" data-email="${escapeHtml(e.from_email)}">&lt;${escapeHtml(e.from_email)}&gt;</span>` : ''}
                                 </div>
+                                <span class="email-snippet"> - ${escapeHtml(snippet)}${body.length > 100 ? '...' : ''}</span>
                                 <div class="email-to">to cypherpunks@toad.com</div>
                             </div>
                             <div class="email-date">${date}</div>
                         </div>
-                        <div class="email-body ${isLong && idx > 0 ? 'collapsed' : ''}" id="body-${e.id}">${escapeHtml(body)}</div>
-                        ${isLong && idx > 0 ? `<button class="expand-btn" onclick="toggleBody('${e.id}')">Show more</button>` : ''}
+                        <div class="email-body" id="body-${e.id}">${escapeHtml(body)}</div>
                     </div>
                 `;
             }).join('');
 
+            // Add click handlers for email addresses and sender names
+            document.querySelectorAll('.email-address').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    filterByEmail(el.dataset.email);
+                });
+            });
+
+            document.querySelectorAll('.sender-link').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (el.dataset.search) {
+                        filterByEmail(el.dataset.search);
+                    }
+                });
+            });
+
+            // Add click handlers for collapsing/expanding email cards
+            document.querySelectorAll('.email-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't toggle if clicking on links or buttons
+                    if (e.target.closest('.sender-link, .email-address, .expand-btn')) return;
+
+                    if (card.classList.contains('collapsed')) {
+                        card.classList.remove('collapsed');
+                    } else {
+                        // Allow collapsing any card except during text selection
+                        if (window.getSelection().toString()) return;
+                        card.classList.add('collapsed');
+                    }
+                });
+            });
+
             window.scrollTo(0, 0);
+        }
+
+        // Filter by email address
+        function filterByEmail(emailAddr) {
+            searchInput.value = emailAddr;
+
+            threadDetail.classList.remove('active');
+            threadListView.classList.remove('hidden');
+
+            activeFilterText.textContent = `Emails from ${emailAddr}`;
+            activeFilter.classList.add('visible');
+
+            applyFilters();
         }
 
         window.toggleBody = function(id) {
@@ -1312,6 +1473,21 @@
         backBtn.addEventListener('click', () => {
             threadDetail.classList.remove('active');
             threadListView.classList.remove('hidden');
+        });
+
+        // Expand/Collapse all buttons
+        expandAllBtn.addEventListener('click', () => {
+            document.querySelectorAll('.email-card.collapsed').forEach(card => {
+                card.classList.remove('collapsed');
+            });
+        });
+
+        collapseAllBtn.addEventListener('click', () => {
+            document.querySelectorAll('.email-card').forEach((card, idx) => {
+                if (idx > 0) {
+                    card.classList.add('collapsed');
+                }
+            });
         });
 
         // Pagination
@@ -1348,15 +1524,20 @@
         navAll.addEventListener('click', () => switchView('all'));
 
         function switchView(view) {
-            if (view === currentView) return;
+            const sameView = view === currentView;
             currentView = view;
+
+            // If same view but person is selected, search is active, or detail view is open, handle it
+            const detailOpen = threadDetail.classList.contains('active');
+            if (sameView && !selectedPerson && !searchInput.value && !detailOpen) return;
 
             // Update nav styling
             navImportant.classList.toggle('active', view === 'important');
             navAll.classList.toggle('active', view === 'all');
 
-            // Clear person filter
+            // Clear person filter and search
             selectedPerson = null;
+            searchInput.value = '';
             personListEl.querySelectorAll('.person-item').forEach(el => {
                 el.classList.remove('active');
             });
