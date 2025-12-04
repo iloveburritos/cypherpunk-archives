@@ -1149,20 +1149,32 @@
             }
 
             .email-card:not(.collapsed) .email-from {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
-                align-items: baseline;
+                display: block;
+            }
+
+            .email-card:not(.collapsed) .email-from .sender-link {
+                display: block;
+                font-weight: 500;
+                margin-bottom: 2px;
+            }
+
+            .email-card:not(.collapsed) .email-from .email-address {
+                display: block;
+                font-size: 12px;
+                margin-left: 0;
+                color: #5f6368;
             }
 
             .email-card:not(.collapsed) .email-date {
                 position: absolute;
                 top: 12px;
                 right: 12px;
+                font-size: 11px;
             }
 
             .email-card:not(.collapsed) .email-card-header {
                 position: relative;
+                padding-right: 100px;
             }
 
             .email-body {
