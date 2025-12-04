@@ -1139,12 +1139,21 @@
                 gap: 2px;
             }
 
+            .email-card.collapsed .email-header-content {
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+            }
+
             .email-card.collapsed .email-from {
                 display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: calc(100% - 10px);
             }
 
             .email-card.collapsed .email-from .sender-link {
-                display: block;
                 font-weight: 500;
             }
 
@@ -1156,9 +1165,10 @@
                 display: none;
             }
 
-            .email-card .email-date {
+            .email-card.collapsed .email-date {
                 flex-shrink: 0;
-                margin-left: auto;
+                margin-left: 8px;
+                white-space: nowrap;
             }
 
             /* Expanded email card on mobile */
