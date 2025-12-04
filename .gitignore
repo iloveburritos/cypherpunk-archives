@@ -23,3 +23,6 @@ final/emails.json
 final/index_by_author.json
 final/index_by_year.json
 final/stats.json
+
+# Large original files (now split into chunks in notable/emails/)
+notable/emails.json

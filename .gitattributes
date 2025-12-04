@@ -1,2 +1,0 @@
-notable/*.json filter=lfs diff=lfs merge=lfs -text
-final/threads.json filter=lfs diff=lfs merge=lfs -text
