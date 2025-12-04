@@ -1098,15 +1098,19 @@
         const collapseAllBtn = document.getElementById('collapse-all-btn');
 
         // Load data
+        // Use GitHub media URLs for LFS files when on Vercel, local paths otherwise
+        const isVercel = window.location.hostname.includes('vercel') || window.location.hostname.includes('cypherpunk.maaria.com');
+        const lfsBase = isVercel ? 'https://media.githubusercontent.com/media/iloveburritos/cypherpunk-archive/main' : '..';
+
         async function loadData() {
             try {
                 // First load notable data (for Important view)
                 const [authorsResp, statsResp, notableThreadsResp, notableEmailsResp, starredResp] = await Promise.all([
-                    fetch('../notable/notable_authors.json'),
-                    fetch('../notable/stats.json'),
-                    fetch('../notable/threads.json'),
-                    fetch('../notable/emails.json'),
-                    fetch('../notable/notable_emails_curated.json')
+                    fetch(`${lfsBase}/notable/notable_authors.json`),
+                    fetch(`${lfsBase}/notable/stats.json`),
+                    fetch(`${lfsBase}/notable/threads.json`),
+                    fetch(`${lfsBase}/notable/emails.json`),
+                    fetch(`${lfsBase}/notable/notable_emails_curated.json`)
                 ]);
 
                 notableAuthors = await authorsResp.json();
@@ -1146,7 +1150,7 @@
         // Load all mail in background (threads only - emails loaded on demand)
         async function loadAllMail() {
             try {
-                const allThreadsResp = await fetch('../final/threads.json');
+                const allThreadsResp = await fetch(`${lfsBase}/final/threads.json`);
                 allThreads = await allThreadsResp.json();
                 allCount.textContent = allThreads.length.toLocaleString();
                 return true;
