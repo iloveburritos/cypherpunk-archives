@@ -903,10 +903,145 @@
             color: #5f6368;
         }
 
+        /* Mobile menu toggle button */
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: #5f6368;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 24px;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .mobile-menu-btn:hover {
+            background: #f1f3f4;
+        }
+
+        /* Mobile nav tabs (shown at top on mobile) */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 8px 16px;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            z-index: 50;
+        }
+
+        /* Hide sidebar close button on desktop */
+        .sidebar-close-btn {
+            display: none;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #f1f3f4;
+            color: #5f6368;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .mobile-nav-item.active {
+            background: #d3e3fd;
+            color: #001d35;
+        }
+
+        .mobile-nav-item:hover {
+            background: #e8eaed;
+        }
+
+        .mobile-nav-item.active:hover {
+            background: #c2d8f8;
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 199;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .mobile-nav {
+                display: flex;
+            }
+
             .sidebar {
-                display: none;
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 280px;
+                height: 100vh;
+                z-index: 200;
+                background: #fff;
+                transition: left 0.3s ease;
+                padding-top: 16px;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-close-btn {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 16px 16px;
+                border-bottom: 1px solid #e0e0e0;
+                margin-bottom: 8px;
+            }
+
+            .sidebar-close-btn span {
+                font-size: 18px;
+                font-weight: 500;
+                color: #202124;
+            }
+
+            .sidebar-close-btn button {
+                width: 36px;
+                height: 36px;
+                border: none;
+                background: transparent;
+                color: #5f6368;
+                cursor: pointer;
+                border-radius: 50%;
+                font-size: 20px;
+            }
+
+            .sidebar-close-btn button:hover {
+                background: #f1f3f4;
             }
 
             .main-content {
@@ -914,18 +1049,122 @@
                 border-radius: 0;
             }
 
+            .layout {
+                padding-top: 116px; /* 64px header + 52px mobile nav */
+            }
+
+            .sidebar-close-btn {
+                display: flex;
+            }
+
             .logo {
                 width: auto;
             }
 
+            .logo-text {
+                display: none;
+            }
+
+            .search-container {
+                margin-left: 0;
+            }
+
             .thread-sender {
-                width: 120px;
+                width: 100px;
+            }
+
+            .thread-content {
+                margin-right: 8px;
+            }
+
+            .thread-snippet {
+                display: none;
+            }
+
+            .thread-date {
+                font-size: 11px;
+            }
+
+            .detail-header {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+            }
+
+            .detail-title h1 {
+                font-size: 18px;
+            }
+
+            .thread-nav {
+                margin-left: 0;
+                margin-top: 8px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .email-list {
+                padding: 0 12px 12px;
+            }
+
+            .email-card-header {
+                padding: 12px;
+            }
+
+            .email-body {
+                padding: 12px;
+            }
+
+            .filter-controls {
+                padding: 8px 12px;
+            }
+
+            .info-tooltip {
+                left: 16px !important;
+                right: 16px;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 8px;
+            }
+
+            .search-box {
+                height: 40px;
+                padding: 0 12px;
+            }
+
+            .search-box input {
+                font-size: 14px;
+            }
+
+            .thread-sender {
+                width: 80px;
+                font-size: 13px;
+            }
+
+            .thread-subject {
+                font-size: 13px;
+            }
+
+            .thread-row {
+                padding: 8px 12px;
+            }
+
+            .pagination {
+                padding: 8px 12px;
+            }
+
+            .detail-actions {
+                display: none !important;
             }
         }
     </style>
 </head>
 <body>
     <header class="header">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">☰</button>
         <div class="logo">
             <div class="logo-icon">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -943,8 +1182,28 @@
         </div>
     </header>
 
+    <!-- Mobile navigation tabs -->
+    <nav class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-item active" id="mobile-nav-important" data-view="important">
+            <span>⭐</span> Important
+        </button>
+        <button class="mobile-nav-item" id="mobile-nav-all" data-view="all">
+            <span>📧</span> All Mail
+        </button>
+        <button class="mobile-nav-item" id="mobile-nav-labels">
+            <span>🏷️</span> Labels
+        </button>
+    </nav>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <div class="layout">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-close-btn" id="sidebar-close">
+                <span>Labels</span>
+                <button aria-label="Close menu">✕</button>
+            </div>
             <div class="sidebar-section">
                 <div class="nav-item active" id="nav-important" data-view="important">
                     <span class="nav-icon">⭐</span>
@@ -1832,6 +2091,69 @@
                 backBtn.click();
             }
         });
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const mobileNavImportant = document.getElementById('mobile-nav-important');
+        const mobileNavAll = document.getElementById('mobile-nav-all');
+        const mobileNavLabels = document.getElementById('mobile-nav-labels');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', openSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+
+        // Update mobile nav state when switching views
+        function updateMobileNav(view) {
+            mobileNavImportant.classList.toggle('active', view === 'important');
+            mobileNavAll.classList.toggle('active', view === 'all');
+            mobileNavLabels.classList.remove('active');
+        }
+
+        // Mobile nav handlers
+        mobileNavImportant.addEventListener('click', () => {
+            switchView('important');
+            updateMobileNav('important');
+        });
+
+        mobileNavAll.addEventListener('click', () => {
+            switchView('all');
+            updateMobileNav('all');
+        });
+
+        mobileNavLabels.addEventListener('click', () => {
+            openSidebar();
+        });
+
+        // Close sidebar when selecting a person on mobile
+        const originalSelectPerson = selectPerson;
+        selectPerson = function(personName) {
+            originalSelectPerson(personName);
+            closeSidebar();
+            // Update mobile nav to show neither Important nor All Mail as active
+            mobileNavImportant.classList.remove('active');
+            mobileNavAll.classList.remove('active');
+            mobileNavLabels.classList.add('active');
+        };
+
+        // Update mobile nav when clicking desktop nav
+        const originalNavImportantClick = navImportant.onclick;
+        navImportant.addEventListener('click', () => updateMobileNav('important'));
+        navAll.addEventListener('click', () => updateMobileNav('all'));
 
         // Initialize
         loadData();
