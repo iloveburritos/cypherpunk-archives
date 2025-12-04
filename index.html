@@ -1047,10 +1047,25 @@
             .main-content {
                 margin-left: 0;
                 border-radius: 0;
+                height: calc(100vh - 116px); /* Account for header + mobile nav */
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .layout {
                 padding-top: 116px; /* 64px header + 52px mobile nav */
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .thread-detail {
+                height: 100%;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .email-list {
+                padding-bottom: 100px; /* Extra padding at bottom for easier scrolling */
             }
 
             .sidebar-close-btn {
